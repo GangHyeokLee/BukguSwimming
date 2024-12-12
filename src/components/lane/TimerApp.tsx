@@ -92,7 +92,7 @@ const TimerDial: React.FC = () => {
                     <div
                         className="text-3xl font-bold text-gray-300">{String(getPrevMinute(minutes)).padStart(3, "0")}</div>
                     <input className="text-3xl font-bold text-center"
-                           style={{width: `${String(minutes).length + 1}ch`}}
+                           style={{width: `${String(minutes).padStart(3, "0").length + 1}ch`}}
                            value={String(minutes).padStart(3, "0")} type="number"
                            onChange={(e) => setMinutes(Number(e.target.value)%1000)}/>
                     <div
@@ -109,7 +109,7 @@ const TimerDial: React.FC = () => {
                     onTouchMove={(e) => handleTouchMove(e, "seconds")}
                 >
                     <div className="text-3xl font-bold text-gray-300">{formatTime(getPrevSecond(seconds))}</div>
-                    <input className="text-3xl font-bold text-center" style={{width: `${String(seconds).length + 1}ch`}}
+                    <input className="text-3xl font-bold text-center" style={{width: `${formatTime(seconds).length + 1}ch`}}
                            value={formatTime(seconds)} type="number"
                            onChange={(e) => setSeconds(Number(e.target.value)%100)}/>
                     <div className="text-3xl font-bold text-gray-300">{formatTime(getNextSecond(seconds))}</div>
