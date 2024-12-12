@@ -1,8 +1,10 @@
 "use client"
 
-import { useRef, useState } from "react";
-import { Input } from "@/components/ui/input";
+import {useRef, useState} from "react";
+import {Input} from "@/components/ui/input";
 import {LucideEye, LucideEyeClosed} from "lucide-react";
+import {Button} from "@/components/ui/button";
+import {login} from "@/api/auth";
 
 export default function LoginPage() {
     const [id, setId] = useState("");
@@ -25,7 +27,8 @@ export default function LoginPage() {
     }
 
     const handleLogin = async () => {
-        console.log(id, password);
+        const response = await login(id, password);
+        console.log(response);
     }
 
     const onSubmit = (e: React.FormEvent<HTMLFormElement>) => {
@@ -43,19 +46,19 @@ export default function LoginPage() {
     }
 
     return (
-        <div className="p-20 flex flex-col justify-center items-center w-full max-w-3xl mx-auto">
-            <div className="text-5xl font-bold flex flex-col gap-3 w-full">
+        <div className="px-3 flex flex-col justify-center items-center w-full h-screen">
+            <div className="px-5 text-3xl font-bold flex flex-col gap-3 w-full">
                 <div>{new Date().getFullYear()}년도 북구청장배</div>
                 <div>수영대회 운영진 페이지</div>
             </div>
             <form onSubmit={onSubmit}
-                  className="p-5 flex flex-col justify-center items-center w-full border-2 border-gray-200 rounded-xl mt-10 gap-5">
+                  className="px-5 flex flex-col justify-center items-center w-full mt-10 gap-5">
                 <div className="w-full flex flex-col gap-3">
                     <label htmlFor="id" className="w-full">아이디</label>
                     <Input
                         ref={idRef}
-                        id="id" type="text" className="py-2 px-5 w-full" value={id}
-                        onChange={(e) => setId(e.target.value)} />
+                        id="id" type="text" className="py-2 px-5 w-full text-xl h-fit" value={id}
+                        onChange={(e) => setId(e.target.value)}/>
                 </div>
 
                 <div className="w-full flex flex-col gap-3">
@@ -65,7 +68,7 @@ export default function LoginPage() {
                             ref={pwdRef}
                             id="password"
                             type={showPassword ? "text" : "password"}
-                            className="py-2 px-5 w-full pr-12"  // right padding for the button
+                            className="py-2 px-5 w-full pr-12 text-xl h-fit"  // right padding for the button
                             value={password}
                             onChange={(e) => setPassword(e.target.value)}
                             onKeyDown={onKeyDown}
@@ -75,12 +78,13 @@ export default function LoginPage() {
                             type="button"
                             onClick={() => setShowPassword(!showPassword)}
                         >
-                            {showPassword ? <LucideEye /> : <LucideEyeClosed />}
+                            {showPassword ? <LucideEye/> : <LucideEyeClosed/>}
                         </button>
                     </div>
                 </div>
 
-                <button type="submit" className="mt-5 px-5 py-2 w-full bg-gray-500 text-white rounded">로그인</button>
+                <Button type="submit"
+                        className="mt-5 text-xl px-5 py-2 w-full bg-gray-500 text-white rounded h-fit">로그인</Button>
             </form>
         </div>
     )
