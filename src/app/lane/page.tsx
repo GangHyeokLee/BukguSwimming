@@ -1,6 +1,6 @@
 "use client"
 
-import TimePicker from "@/components/lane/TimePicker";
+import TimePicker from "@/components/lane/TimerApp";
 
 // const dummyGame={
 //     type: "dummy",
