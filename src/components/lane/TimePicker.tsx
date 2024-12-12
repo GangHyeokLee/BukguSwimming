@@ -13,29 +13,30 @@ const TimePicker: React.FC = () => {
 
     // 터치 이동 시 스크롤 처리
     const handleTouchMove = (e: React.TouchEvent<HTMLDivElement>) => {
+        e.preventDefault();  // 기본 스크롤을 방지
+
         const touchEndY = e.touches[0].clientY; // 터치 끝 위치
         const deltaY = touchStartY.current - touchEndY;
 
-        const target = e.target as HTMLDivElement; // e.target을 HTMLDivElement로 타입 단언
+        const target = e.target as HTMLDivElement;
 
-
-        // 초 단위 스크롤
         if (target.classList.contains("seconds")) {
             setSeconds((prev) => {
                 const newSeconds = prev + (deltaY < 0 ? 1 : -1);
-                return Math.max(0, Math.min(60, newSeconds)); // 0~60 범위로 제한
-            });
-        }
-        // 초의 분수 단위 스크롤
-        if (target.classList.contains("fraction")) {
-            setFraction((prev) => {
-                const newFraction = prev + (deltaY < 0 ? 1 : -1);
-                return Math.max(0, Math.min(99, newFraction)); // 0~99 범위로 제한
+                return Math.max(0, Math.min(60, newSeconds));
             });
         }
 
-        touchStartY.current = touchEndY; // 터치 끝 위치를 새로 설정
+        if (target.classList.contains("fraction")) {
+            setFraction((prev) => {
+                const newFraction = prev + (deltaY < 0 ? 1 : -1);
+                return Math.max(0, Math.min(99, newFraction));
+            });
+        }
+
+        touchStartY.current = touchEndY;
     };
+
 
     return (
         <div className="time-picker flex flex-col items-center">
