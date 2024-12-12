@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState, useCallback } from "react";
+import React, {useEffect, useRef, useState, useCallback} from "react";
 
 const TimerDial: React.FC = () => {
     const [minutes, setMinutes] = useState<number>(0);
@@ -20,7 +20,7 @@ const TimerDial: React.FC = () => {
             }
         };
 
-        document.addEventListener("touchmove", preventScroll, { passive: false });
+        document.addEventListener("touchmove", preventScroll, {passive: false});
 
         return () => {
             document.removeEventListener("touchmove", preventScroll);
@@ -89,9 +89,14 @@ const TimerDial: React.FC = () => {
                     onTouchStart={handleTouchStart} // 터치 시작 위치 기록
                     onTouchMove={(e) => handleTouchMove(e, "minutes")}
                 >
-                    <div className="text-3xl font-bold text-gray-300">{String(getPrevMinute(minutes)).padStart(3, "0")}</div>
-                    <div className="text-3xl font-bold">{String(minutes).padStart(3, "0")}</div>
-                    <div className="text-3xl font-bold text-gray-300">{String(getNextMinute(minutes)).padStart(3, "0")}</div>
+                    <div
+                        className="text-3xl font-bold text-gray-300">{String(getPrevMinute(minutes)).padStart(3, "0")}</div>
+                    <input className="text-3xl font-bold text-center"
+                           style={{width: `${String(minutes).length + 1}ch`}}
+                           value={String(minutes).padStart(3, "0")} type="number"
+                           onChange={(e) => setMinutes(Number(e.target.value)%1000)}/>
+                    <div
+                        className="text-3xl font-bold text-gray-300">{String(getNextMinute(minutes)).padStart(3, "0")}</div>
                 </div>
 
                 <div className="text-3xl font-bold">:</div>
@@ -104,7 +109,9 @@ const TimerDial: React.FC = () => {
                     onTouchMove={(e) => handleTouchMove(e, "seconds")}
                 >
                     <div className="text-3xl font-bold text-gray-300">{formatTime(getPrevSecond(seconds))}</div>
-                    <div className="text-3xl font-bold">{formatTime(seconds)}</div>
+                    <input className="text-3xl font-bold text-center" style={{width: `${String(seconds).length + 1}ch`}}
+                           value={formatTime(seconds)} type="number"
+                           onChange={(e) => setSeconds(Number(e.target.value)%100)}/>
                     <div className="text-3xl font-bold text-gray-300">{formatTime(getNextSecond(seconds))}</div>
                 </div>
             </div>
