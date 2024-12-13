@@ -23,10 +23,10 @@ jobs:
           git config user.name "GangHyeokLee"
           git config user.email "rkdgur5381@gmail.com"
 
-      - name: Push changes to forked-repo
+      - name: Push changes to forked_repo
         run: |
-          git push -f forked-repo master
+          git push -f forked_repo master
 
       - name: Clean up
         run: |
-          git remote remove forked-repo
+          git remote remove forked_repo
