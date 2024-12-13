@@ -29,7 +29,7 @@ export const NumDial = ({ maxNum }: NumDialProps) => {
             const touchY = e.touches[0].clientY;
             const delta = startY - touchY;
 
-            const threshold = 10;
+            const threshold = 50;
 
             if (Math.abs(delta) > threshold) {
                 const step = delta > 0 ? 1 : -1;
@@ -41,27 +41,30 @@ export const NumDial = ({ maxNum }: NumDialProps) => {
 
     const handleTouchEnd = useCallback((e: React.TouchEvent) => {
         if (touchStartTime && startY) {
-            const duration = (Date.now() - touchStartTime) / 1000;
+            const duration = (Date.now() - touchStartTime) / 100;
             const deltaY = startY - e.changedTouches[0].clientY;
             let velocity = deltaY / duration;
 
-            // threshold를 상수로 분리하여 의도를 명확히 함
             const VELOCITY_THRESHOLD = 10;
+            let lastUpdateTime = Date.now();
+            const UPDATE_INTERVAL = 50; // 숫자 업데이트 간격 (밀리초)
 
             const animate = () => {
+                const currentTime = Date.now();
                 const step = Math.round(velocity / VELOCITY_THRESHOLD);
 
-                // 속도가 임계값 이하면 애니메이션 중단
                 if (Math.abs(step) < 1) {
                     cancelAnimationFrame(animationFrameRef.current!);
                     animationFrameRef.current = null;
                     return;
                 }
 
-                // step만큼 숫자 변경
-                setDialNum((prev) => (prev + step + maxNum) % maxNum);
+                // UPDATE_INTERVAL 마다 숫자 업데이트
+                if (currentTime - lastUpdateTime >= UPDATE_INTERVAL) {
+                    setDialNum((prev) => (prev + step + maxNum) % maxNum);
+                    lastUpdateTime = currentTime;
+                }
 
-                // 감속
                 velocity *= 0.9;
 
                 animationFrameRef.current = requestAnimationFrame(animate);
