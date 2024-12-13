@@ -56,14 +56,13 @@ export const NumDial = ({ maxNum }: NumDialProps) => {
             const totalDistance = Math.abs(startY - lastTouchY!);
             const instantVelocity = Math.abs(velocityHistory[velocityHistory.length - 1]);
 
-            // 빠른 스와이프 감지 (짧은 거리라도 속도가 빠르면)
             if (instantVelocity > 1000) {
                 const avgVelocity = velocityHistory.reduce((a, b) => a + b, 0) / velocityHistory.length;
-                let velocity = avgVelocity * 0.5; // 초기 속도 조절
+                let velocity = avgVelocity * 0.5;
 
-                const VELOCITY_THRESHOLD = 10;
+                const VELOCITY_THRESHOLD = 20;
                 let lastUpdateTime = Date.now();
-                const UPDATE_INTERVAL = 100;
+                const UPDATE_INTERVAL = 120;
 
                 const animate = () => {
                     const currentTime = Date.now();
@@ -80,13 +79,12 @@ export const NumDial = ({ maxNum }: NumDialProps) => {
                         lastUpdateTime = currentTime;
                     }
 
-                    velocity *= 0.9;
+                    velocity *= 0.85;
                     animationFrameRef.current = requestAnimationFrame(animate);
                 };
 
                 animationFrameRef.current = requestAnimationFrame(animate);
             }
-            // 일반적인 짧은 터치
             else if (totalDistance < 30 && totalDuration < 0.3) {
                 const direction = startY! > lastTouchY! ? 1 : -1;
                 setDialNum((prev) => (prev + direction + maxNum) % maxNum);
