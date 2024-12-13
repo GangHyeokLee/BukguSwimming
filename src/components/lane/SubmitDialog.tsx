@@ -27,7 +27,7 @@ export const SubmitDialog = ({ time, foul }: SubmitDialogProps) => {
           <hr />
           <div className="text-lg mt-5 flex flex-col gap-2">
             <div>반칙 내용</div>
-            <div className="text-xl font-bold w-[300px] break-words">
+            <div className="text-xl font-bold w-[280px] break-words">
               {foul}
             </div>
           </div>

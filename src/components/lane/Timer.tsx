@@ -18,7 +18,7 @@ function Timer({ setTime }: TimerProps) {
             <NumDial maxNum={60} dialNum={minutes} setDialNum={setMinutes} />
             <div className="text-3xl font-bold">&apos;</div>
             <NumDial maxNum={60} dialNum={seconds} setDialNum={setSeconds} />
-            <div className="text-3xl font-bold">&apos;&apos;</div>
+            <div className="text-3xl font-bold">.</div>
             <NumDial maxNum={1000} dialNum={milliseconds} setDialNum={setMilliseconds} />
         </div>
     );
