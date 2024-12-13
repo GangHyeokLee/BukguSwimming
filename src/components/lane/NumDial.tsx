@@ -1,12 +1,12 @@
-"use client"
 import React, { useCallback, useEffect, useRef, useState } from "react";
 
 interface NumDialProps {
     maxNum: number;
+    dialNum: number;
+    setDialNum: React.Dispatch<React.SetStateAction<number>>;
 }
 
-export const NumDial = ({ maxNum }: NumDialProps) => {
-    const [dialNum, setDialNum] = useState(0);
+function NumDial({ maxNum, dialNum, setDialNum }: NumDialProps) {
     const [startY, setStartY] = useState<number | null>(null);
     const [touchStartTime, setTouchStartTime] = useState<number | null>(null);
     const [lastTouchY, setLastTouchY] = useState<number | null>(null);
@@ -44,11 +44,11 @@ export const NumDial = ({ maxNum }: NumDialProps) => {
 
             if (Math.abs(delta) > threshold) {
                 const step = delta > 0 ? 1 : -1;
-                setDialNum((prev) => (prev + step + maxNum) % maxNum);
+                setDialNum((prev: number) => (prev + step + maxNum) % maxNum);
                 setStartY(touchY);
             }
         }
-    }, [lastTouchTime, lastTouchY, maxNum, startY]);
+    }, [lastTouchTime, lastTouchY, maxNum, startY, setDialNum]);
 
     const handleTouchEnd = useCallback(() => {
         if (touchStartTime && startY && velocityHistory.length > 0) {
@@ -95,7 +95,7 @@ export const NumDial = ({ maxNum }: NumDialProps) => {
         setLastTouchY(null);
         setLastTouchTime(null);
         setVelocityHistory([]);
-    }, [maxNum, startY, touchStartTime, velocityHistory, lastTouchY]);
+    }, [maxNum, startY, touchStartTime, velocityHistory, lastTouchY, setDialNum]);
 
     useEffect(() => {
         const preventScroll = (e: TouchEvent) => {
@@ -147,4 +147,6 @@ export const NumDial = ({ maxNum }: NumDialProps) => {
             </div>
         </div>
     );
-};
+}
+
+export default React.memo(NumDial);
