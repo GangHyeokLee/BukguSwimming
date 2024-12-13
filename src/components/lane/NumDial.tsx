@@ -29,7 +29,7 @@ export const NumDial = ({ maxNum }: NumDialProps) => {
             const touchY = e.touches[0].clientY;
             const delta = startY - touchY;
 
-            const threshold = 50;
+            const threshold = 10;
 
             if (Math.abs(delta) > threshold) {
                 const step = delta > 0 ? 1 : -1;
@@ -65,7 +65,7 @@ export const NumDial = ({ maxNum }: NumDialProps) => {
                     lastUpdateTime = currentTime;
                 }
 
-                velocity *= 0.9;
+                velocity *= 0.95;
 
                 animationFrameRef.current = requestAnimationFrame(animate);
             };
