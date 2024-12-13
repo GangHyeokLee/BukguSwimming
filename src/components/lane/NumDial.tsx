@@ -84,7 +84,13 @@ export const NumDial = ({ maxNum }: NumDialProps) => {
         };
     }, []);
 
-    const formatTime = (time: number) => time.toString().padStart(maxNum.toString().length - 1, "0");
+    const formatTime = (time: number) =>
+        time.toString().padStart(
+            String(maxNum - 1).length === String(maxNum).length
+                ? String(maxNum).length
+                : String(maxNum - 1).length,
+            "0"
+        );
 
     return (
         <div
