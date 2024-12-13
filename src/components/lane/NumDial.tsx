@@ -40,7 +40,7 @@ export const NumDial = ({ maxNum }: NumDialProps) => {
 
         if (dialRef.current) {
             const delta = startY - touchY;
-            const threshold = 10;
+            const threshold = 20;
 
             if (Math.abs(delta) > threshold) {
                 const step = delta > 0 ? 1 : -1;
@@ -84,8 +84,7 @@ export const NumDial = ({ maxNum }: NumDialProps) => {
                 };
 
                 animationFrameRef.current = requestAnimationFrame(animate);
-            }
-            else if (totalDistance < 30 && totalDuration < 0.3) {
+            } else if (totalDistance < 30 && totalDuration < 0.3) {
                 const direction = startY! > lastTouchY! ? 1 : -1;
                 setDialNum((prev) => (prev + direction + maxNum) % maxNum);
             }
@@ -117,6 +116,10 @@ export const NumDial = ({ maxNum }: NumDialProps) => {
             "0"
         );
 
+    const handleTouchChange = (newNum: number) => {
+        setDialNum(newNum);
+    }
+
     return (
         <div
             className="relative flex flex-col items-center py-3 px-8 gap-3"
@@ -125,7 +128,9 @@ export const NumDial = ({ maxNum }: NumDialProps) => {
             onTouchMove={handleTouchMove}
             onTouchEnd={handleTouchEnd}
         >
-            <div className="text-2xl font-bold text-gray-300">
+            <div className="text-2xl font-bold text-gray-300"
+                onClick={() => handleTouchChange((dialNum - 1 + maxNum) % maxNum)}
+            >
                 {formatTime((dialNum - 1 + maxNum) % maxNum)}
             </div>
             <input
@@ -135,7 +140,9 @@ export const NumDial = ({ maxNum }: NumDialProps) => {
                 type="number"
                 onChange={(e) => setDialNum(Number(e.target.value) % maxNum)}
             />
-            <div className="text-2xl font-bold text-gray-300">
+            <div className="text-2xl font-bold text-gray-300"
+                onClick={() => handleTouchChange((dialNum + 1) % maxNum)}
+            >
                 {formatTime((dialNum + 1) % maxNum)}
             </div>
         </div>
