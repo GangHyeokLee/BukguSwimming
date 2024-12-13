@@ -1,4 +1,7 @@
-import TimePicker from "@/components/lane/TimerApp";
+"use client"
+import { SubmitDialog } from "@/components/lane/SubmitDialog";
+import { Timer } from "@/components/lane/Timer";
+import { useState } from "react";
 
 // const dummyGame={
 //     type: "dummy",
@@ -12,8 +15,10 @@ import TimePicker from "@/components/lane/TimerApp";
 
 export default function LoginPage() {
 
+    const [time, setTime] = useState(0);
+
     return (
-        <div className="px-3 flex flex-col justify-center items-center w-full h-screen">
+        <div className="px-3 flex flex-col justify-center items-center w-full h-screen gap-5">
             <div>
                 경기 이름과 화살표
             </div>
@@ -23,10 +28,8 @@ export default function LoginPage() {
             <div>
                 반칙 설정칸
             </div>
-            <TimePicker/>
-            <div>
-                전송버튼
-            </div>
+            <Timer setTime={setTime} />
+            <SubmitDialog time={time} />
         </div>
-    )
+    );
 }
