@@ -41,7 +41,7 @@ export const NumDial = ({ maxNum }: NumDialProps) => {
 
     const handleTouchEnd = useCallback((e: React.TouchEvent) => {
         if (touchStartTime && startY) {
-            const duration = (Date.now() - touchStartTime) / 100;
+            const duration = (Date.now() - touchStartTime) / 500;
             const deltaY = startY - e.changedTouches[0].clientY;
             let velocity = deltaY / duration;
 
