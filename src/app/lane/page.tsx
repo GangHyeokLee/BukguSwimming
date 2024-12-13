@@ -1,5 +1,3 @@
-"use client"
-
 import TimePicker from "@/components/lane/TimerApp";
 
 // const dummyGame={
@@ -25,9 +23,7 @@ export default function LoginPage() {
             <div>
                 반칙 설정칸
             </div>
-            <div>
-                <TimePicker/>
-            </div>
+            <TimePicker/>
             <div>
                 전송버튼
             </div>
