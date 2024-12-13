@@ -1,11 +1,10 @@
-import { useEffect, useState } from "react";
+import { memo, useEffect, useState } from "react";
 import NumDial from "./NumDial";
 
 interface TimerProps {
     setTime: React.Dispatch<React.SetStateAction<number>>;
 }
-
-export const Timer = ({ setTime }: TimerProps) => {
+function Timer({ setTime }: TimerProps) {
     const [minutes, setMinutes] = useState(0);
     const [seconds, setSeconds] = useState(0);
     const [milliseconds, setMilliseconds] = useState(0);
@@ -24,3 +23,5 @@ export const Timer = ({ setTime }: TimerProps) => {
         </div>
     );
 };
+
+export default memo(Timer);

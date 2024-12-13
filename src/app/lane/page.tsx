@@ -1,7 +1,7 @@
 "use client"
 import FoulPanel from "@/components/lane/FoulPanel";
 import { SubmitDialog } from "@/components/lane/SubmitDialog";
-import { Timer } from "@/components/lane/Timer";
+import Timer from "@/components/lane/Timer";
 import { useState } from "react";
 
 // const dummyGame={
@@ -20,7 +20,7 @@ export default function LoginPage() {
     const [foul, setFoul] = useState<string>("없음");
 
     return (
-        <div className="px-3 flex flex-col justify-center items-center w-full h-screen gap-12">
+        <div className="px-3 flex flex-col justify-center items-center w-full h-screen gap-8">
             <div>
                 경기 이름과 화살표
             </div>
