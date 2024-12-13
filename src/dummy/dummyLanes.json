@@ -1,0 +1,58 @@
+[
+  {
+    "player": "player1",
+    "team": "team1",
+    "laneNumber": 1,
+    "gameNumber": 1,
+    "event": "자유형",
+    "age": "성인부",
+    "gender": "남자",
+    "distance": "50m",
+    "next": 2
+  },
+  {
+    "player": "player2",
+    "team": "team2",
+    "laneNumber": 2,
+    "gameNumber": 1,
+    "event": "자유형",
+    "age": "성인부",
+    "gender": "여자",
+    "distance": "50m",
+    "previous": 1
+  },
+  {
+    "player": "player3",
+    "team": "team3",
+    "laneNumber": 1,
+    "gameNumber": 2,
+    "event": "자유형",
+    "age": "초등부",
+    "gender": "남자",
+    "distance": "50m",
+    "next": 2
+  },
+  {
+    "player": "player4",
+    "team": "team4",
+    "laneNumber": 2,
+    "gameNumber": 2,
+    "event": "자유형",
+    "age": "초등부",
+    "gender": "남자",
+    "distance": "50m",
+    "previous": 1,
+    "next": 3
+  },
+  {
+    "player": "player5",
+    "team": "team5",
+    "laneNumber": 2,
+    "gameNumber": 3,
+    "event": "자유형",
+    "age": "초등부",
+    "gender": "여자",
+    "distance": "50m",
+    "previous": 2
+  }
+]

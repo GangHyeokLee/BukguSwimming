@@ -21,7 +21,7 @@ function FoulPanel({ foul, setFoul }: FoulPanelProps) {
 
   return (
     <div className="w-full flex flex-col gap-4">
-      <Button className="whitespace-nowrap text-2xl font-bold py-4 h-fit border-1"
+      <Button className="whitespace-nowrap text-2xl font-bold py-4 h-fit border-2"
         onClick={() => {
           setFoul("없음")
           setCustomFoul("")
