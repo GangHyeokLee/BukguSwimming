@@ -3,16 +3,16 @@ import dummyLanes from "@/dummy/dummyLanes.json";
 import Link from "next/link";
 
 interface PageProps {
-    params: {
+    params: Promise<{
         id: string;
-    };
+    }>;
 }
 
 export default async function LanePage({ params }: PageProps) {
 
-    const param = await params;
-    // const response = await apiClient.get("");
-    const response = dummyLanes[parseInt(param.id)];
+    const resolvedParams = await params;
+
+    const response = dummyLanes[parseInt(resolvedParams.id)];
 
     return response ? (
         <div className="px-3 flex flex-col justify-center items-center w-full h-screen gap-8">
@@ -57,8 +57,7 @@ export default async function LanePage({ params }: PageProps) {
             </table>
             <LaneClientComponent />
         </div>
-    )
-        : (
-            <div>Not Found</div>
-        )
+    ) : (
+        <div>Not Found</div>
+    );
 }
