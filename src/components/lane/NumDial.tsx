@@ -7,13 +7,8 @@ interface NumDialProps {
 
 export const NumDial = ({ maxNum }: NumDialProps) => {
     const [dialNum, setDialNum] = useState(0);
-
-    // touch start position Y
-    const [startY, setStartY] = useState<number | null>(null); // Change to null instead of -1
-
-    // state for calculate time
+    const [startY, setStartY] = useState<number | null>(null);
     const [touchStartTime, setTouchStartTime] = useState<number | null>(null);
-
     const dialRef = useRef<HTMLDivElement | null>(null);
     const animationFrameRef = useRef<number | null>(null);
 
@@ -29,7 +24,7 @@ export const NumDial = ({ maxNum }: NumDialProps) => {
             const touchY = e.touches[0].clientY;
             const delta = startY - touchY;
 
-            const threshold = 10;
+            const threshold = 20;
 
             if (Math.abs(delta) > threshold) {
                 const step = delta > 0 ? 1 : -1;
