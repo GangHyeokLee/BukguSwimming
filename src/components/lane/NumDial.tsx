@@ -9,22 +9,38 @@ export const NumDial = ({ maxNum }: NumDialProps) => {
     const [dialNum, setDialNum] = useState(0);
     const [startY, setStartY] = useState<number | null>(null);
     const [touchStartTime, setTouchStartTime] = useState<number | null>(null);
+    const [lastTouchY, setLastTouchY] = useState<number | null>(null);
+    const [lastTouchTime, setLastTouchTime] = useState<number | null>(null);
+    const [velocityHistory, setVelocityHistory] = useState<number[]>([]);
     const dialRef = useRef<HTMLDivElement | null>(null);
     const animationFrameRef = useRef<number | null>(null);
 
     const handleTouchStart = useCallback((e: React.TouchEvent) => {
         setStartY(e.touches[0].clientY);
         setTouchStartTime(Date.now());
+        setVelocityHistory([]);
     }, []);
 
     const handleTouchMove = useCallback((e: React.TouchEvent) => {
         if (startY === null) return;
 
-        if (dialRef.current) {
-            const touchY = e.touches[0].clientY;
-            const delta = startY - touchY;
+        const currentTime = Date.now();
+        const touchY = e.touches[0].clientY;
 
-            const threshold = 20;
+        if (lastTouchY !== null && lastTouchTime !== null) {
+            const deltaY = lastTouchY - touchY;
+            const deltaTime = (currentTime - lastTouchTime) / 1000;
+            const instantVelocity = deltaY / deltaTime;
+
+            setVelocityHistory(prev => [...prev.slice(-4), instantVelocity]);
+        }
+
+        setLastTouchY(touchY);
+        setLastTouchTime(currentTime);
+
+        if (dialRef.current) {
+            const delta = startY - touchY;
+            const threshold = 10;
 
             if (Math.abs(delta) > threshold) {
                 const step = delta > 0 ? 1 : -1;
@@ -32,44 +48,57 @@ export const NumDial = ({ maxNum }: NumDialProps) => {
                 setStartY(touchY);
             }
         }
-    }, [maxNum, startY]);
+    }, [lastTouchTime, lastTouchY, maxNum, startY]);
 
-    const handleTouchEnd = useCallback((e: React.TouchEvent) => {
-        if (touchStartTime && startY) {
-            const duration = (Date.now() - touchStartTime) / 500;
-            const deltaY = startY - e.changedTouches[0].clientY;
-            let velocity = deltaY / duration;
+    const handleTouchEnd = useCallback(() => {
+        if (touchStartTime && startY && velocityHistory.length > 0) {
+            const totalDuration = (Date.now() - touchStartTime) / 1000;
+            const totalDistance = Math.abs(startY - lastTouchY!);
+            const instantVelocity = Math.abs(velocityHistory[velocityHistory.length - 1]);
 
-            const VELOCITY_THRESHOLD = 10;
-            let lastUpdateTime = Date.now();
-            const UPDATE_INTERVAL = 50; // 숫자 업데이트 간격 (밀리초)
+            // 빠른 스와이프 감지 (짧은 거리라도 속도가 빠르면)
+            if (instantVelocity > 1000) {
+                const avgVelocity = velocityHistory.reduce((a, b) => a + b, 0) / velocityHistory.length;
+                let velocity = avgVelocity * 0.5; // 초기 속도 조절
 
-            const animate = () => {
-                const currentTime = Date.now();
-                const step = Math.round(velocity / VELOCITY_THRESHOLD);
+                const VELOCITY_THRESHOLD = 10;
+                let lastUpdateTime = Date.now();
+                const UPDATE_INTERVAL = 100;
 
-                if (Math.abs(step) < 1) {
-                    cancelAnimationFrame(animationFrameRef.current!);
-                    animationFrameRef.current = null;
-                    return;
-                }
+                const animate = () => {
+                    const currentTime = Date.now();
+                    const step = Math.round(velocity / VELOCITY_THRESHOLD);
 
-                // UPDATE_INTERVAL 마다 숫자 업데이트
-                if (currentTime - lastUpdateTime >= UPDATE_INTERVAL) {
-                    setDialNum((prev) => (prev + step + maxNum) % maxNum);
-                    lastUpdateTime = currentTime;
-                }
+                    if (Math.abs(step) < 1) {
+                        cancelAnimationFrame(animationFrameRef.current!);
+                        animationFrameRef.current = null;
+                        return;
+                    }
 
-                velocity *= 0.95;
+                    if (currentTime - lastUpdateTime >= UPDATE_INTERVAL) {
+                        setDialNum((prev) => (prev + step + maxNum) % maxNum);
+                        lastUpdateTime = currentTime;
+                    }
+
+                    velocity *= 0.9;
+                    animationFrameRef.current = requestAnimationFrame(animate);
+                };
 
                 animationFrameRef.current = requestAnimationFrame(animate);
-            };
-
-            animationFrameRef.current = requestAnimationFrame(animate);
-            setTouchStartTime(null);
-            setStartY(null);
+            }
+            // 일반적인 짧은 터치
+            else if (totalDistance < 30 && totalDuration < 0.3) {
+                const direction = startY! > lastTouchY! ? 1 : -1;
+                setDialNum((prev) => (prev + direction + maxNum) % maxNum);
+            }
         }
-    }, [maxNum, startY, touchStartTime]);
+
+        setTouchStartTime(null);
+        setStartY(null);
+        setLastTouchY(null);
+        setLastTouchTime(null);
+        setVelocityHistory([]);
+    }, [maxNum, startY, touchStartTime, velocityHistory, lastTouchY]);
 
     useEffect(() => {
         const preventScroll = (e: TouchEvent) => {
@@ -112,5 +141,5 @@ export const NumDial = ({ maxNum }: NumDialProps) => {
                 {formatTime((dialNum + 1) % maxNum)}
             </div>
         </div>
-    )
-}
+    );
+};
