@@ -1,5 +1,6 @@
 import LaneClientComponent from "@/components/lane/LaneClientComponent";
 import dummyLanes from "@/dummy/dummyLanes.json";
+import { ChevronLeft, ChevronRight } from "lucide-react";
 import Link from "next/link";
 
 interface PageProps {
@@ -15,18 +16,24 @@ export default async function LanePage({ params }: PageProps) {
     const response = dummyLanes[parseInt(resolvedParams.id)];
 
     return response ? (
-        <div className="px-3 flex flex-col justify-center items-center w-full h-screen gap-8">
+        <div className="px-3 flex flex-col py-10 w-full items-center gap-8">
             <table className="w-full justify-between">
                 <thead>
                     <tr>
                         <th className="w-1/3 text-center">
-                            {response.previous ? <Link href={`/lane/${response.previous}`}>이전</Link> : <div></div>}
+                            {response.previous ? <Link href={`/lane/${response.previous}`} className="flex flex-row gap-2 items-center justify-start">
+                                <ChevronLeft />
+                                이전
+                            </Link> : <div></div>}
                         </th>
                         <th className="w-1/3 text-center">
                             <Link href={`/lane`}>목록</Link>
                         </th>
                         <th className="w-1/3 text-center">
-                            {response.next && <Link href={`/lane/${response.next}`}>다음</Link>}
+                            {response.next &&
+                                <Link href={`/lane/${response.next}`} className="flex flex-row gap-2 items-center justify-end">
+                                    다음<ChevronRight />
+                                </Link>}
                         </th>
                     </tr>
                 </thead>
