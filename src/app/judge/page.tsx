@@ -23,7 +23,7 @@ function LaneListPage() {
             <tr className="border-b border-gray-200 text-xl hover:bg-gray-100 cursor-pointer"
               key={lane.gameNumber + "-" + lane.laneNumber}>
               <td className="py-3 text-center" colSpan={5}>
-                <Link href={`/lane/${idx}`} className="block">
+                <Link href={`/judge/${idx}`} className="block">
                   <div className="grid grid-cols-5">
                     <div>{lane.gameNumber}</div>
                     <div>{lane.player}</div>
