@@ -5,6 +5,7 @@ import Timer from "@/components/lane/Timer";
 import { useState } from "react";
 
 import { memo } from "react";
+import { AbsentDialog } from "./AbsentDialog";
 
 function LaneClientComponent() {
   const [time, setTime] = useState(0);
@@ -13,7 +14,10 @@ function LaneClientComponent() {
     <>
       <FoulPanel foul={foul} setFoul={setFoul} />
       <Timer setTime={setTime} />
-      <SubmitDialog time={time} foul={foul} />
+      <div className="flex flex-row gap-5 justify-center items-center">
+        <AbsentDialog />
+        <SubmitDialog time={time} foul={foul} />
+      </div>
     </>
   )
 }

@@ -10,9 +10,9 @@ export const SubmitDialog = ({ time, foul }: SubmitDialogProps) => {
   return (
     <Dialog>
       <DialogTrigger asChild>
-        <Button className="w-fit h-fit text-3xl py-3 px-10 font-bold" >전송</Button>
+        <Button className="w-fit h-fit text-3xl py-3 px-10 font-bold">전송</Button>
       </DialogTrigger>
-      <DialogContent className="w-fit">
+      <DialogContent className="w-fit max-w-[400px] border-2 border-gray-200 rounded-lg">
         <DialogHeader className="flex flex-col gap-5">
           <DialogTitle></DialogTitle>
           <div className="text-lg flex flex-col gap-2">
@@ -34,7 +34,7 @@ export const SubmitDialog = ({ time, foul }: SubmitDialogProps) => {
         </DialogHeader>
         <DialogFooter className="flex flex-row justify-center gap-5">
           <Button variant={"destructive"}>취소</Button>
-          <Button variant={"default"}>전송</Button>
+          <Button variant={"default"}>확인</Button>
         </DialogFooter>
       </DialogContent>
     </Dialog>
