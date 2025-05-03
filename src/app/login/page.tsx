@@ -1,10 +1,10 @@
 "use client"
 
-import {useRef, useState} from "react";
-import {Input} from "@/components/ui/input";
-import {LucideEye, LucideEyeClosed} from "lucide-react";
-import {Button} from "@/components/ui/button";
-import {login} from "@/api/auth";
+import { useRef, useState } from "react";
+import { Input } from "@/components/ui/input";
+import { LucideEye, LucideEyeClosed } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { login } from "@/api/auth";
 
 export default function LoginPage() {
     const [id, setId] = useState("");
@@ -27,8 +27,10 @@ export default function LoginPage() {
     }
 
     const handleLogin = async () => {
-        const response = await login(id, password);
-        console.log(response);
+        const response = await login(id, password) as { code: number };
+        if (response.code == 401) {
+            alert("아이디 또는 비밀번호가 일치하지 않습니다.");
+        }
     }
 
     const onSubmit = (e: React.FormEvent<HTMLFormElement>) => {
@@ -52,13 +54,13 @@ export default function LoginPage() {
                 <div>수영대회 운영진 페이지</div>
             </div>
             <form onSubmit={onSubmit}
-                  className="px-5 flex flex-col justify-center items-center w-full mt-10 gap-5">
+                className="px-5 flex flex-col justify-center items-center w-full mt-10 gap-5">
                 <div className="w-full flex flex-col gap-3">
                     <label htmlFor="id" className="w-full">아이디</label>
                     <Input
                         ref={idRef}
                         id="id" type="text" className="py-2 px-5 w-full text-xl h-fit" value={id}
-                        onChange={(e) => setId(e.target.value)}/>
+                        onChange={(e) => setId(e.target.value)} />
                 </div>
 
                 <div className="w-full flex flex-col gap-3">
@@ -78,13 +80,13 @@ export default function LoginPage() {
                             type="button"
                             onClick={() => setShowPassword(!showPassword)}
                         >
-                            {showPassword ? <LucideEye/> : <LucideEyeClosed/>}
+                            {showPassword ? <LucideEye /> : <LucideEyeClosed />}
                         </button>
                     </div>
                 </div>
 
                 <Button type="submit"
-                        className="mt-5 text-xl px-5 py-2 w-full bg-gray-500 text-white rounded h-fit">로그인</Button>
+                    className="mt-5 text-xl px-5 py-2 w-full bg-gray-500 text-white rounded h-fit">로그인</Button>
             </form>
         </div>
     )
