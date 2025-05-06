@@ -6,6 +6,10 @@ const nextConfig = {
         source: '/auth/:path*',
         destination: 'http://127.0.0.1:3000/auth/:path*', // Flask API 프록시
       },
+      {
+        source: '/judge/:path*',
+        destination: 'http://127.0.0.1:3000/judge/:path*', // Flask API 프록시
+      },
     ];
   },
 };
