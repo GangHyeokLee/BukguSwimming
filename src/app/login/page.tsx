@@ -27,8 +27,8 @@ export default function LoginPage() {
     }
 
     const handleLogin = async () => {
-        const response = await login(id, password) as { code: number };
-        if (response.code == 401) {
+        const response = await login(id, password);
+        if (!response) {
             alert("아이디 또는 비밀번호가 일치하지 않습니다.");
         }
     }
