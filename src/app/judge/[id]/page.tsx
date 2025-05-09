@@ -1,6 +1,7 @@
 import { getLaneDetail } from "@/api/judge/server";
 import LaneClientComponent from "@/components/lane/LaneClientComponent";
 import { LaneDetailType } from "@/types/lanes";
+import Link from "next/link";
 
 export default async function LanePage({ params }: { params: { id: string } }) {
     const { id } = await params;
@@ -10,6 +11,13 @@ export default async function LanePage({ params }: { params: { id: string } }) {
 
     return (response ? (
         <div className="px-3 flex flex-col py-10 w-full items-center gap-8">
+            <div className="w-full max-w-2xl flex justify-start">
+                <Link href="/judge">
+                    <button className="px-3 py-1 rounded hover:bg-gray-300">
+                        ← 목록
+                    </button>
+                </Link>
+            </div>
             <div className="flex gap-2 justify-center items-center text-xl whitespace-nowrap">
                 레인 {response.lane} - {response.swimming_name}
             </div>

@@ -11,7 +11,6 @@ export const getLanes = async (lane_num: number) => {
   }
 }
 
-
 export const submitResult = async (playdata_id: string, record: number, dq: string) => {
   try {
     const response = await apiClient.post('/judge/register', {
@@ -23,5 +22,16 @@ export const submitResult = async (playdata_id: string, record: number, dq: stri
   } catch (error) {
     console.error("Error submitting result:", error);
     throw error;
+  }
+}
+
+export const getNowPlay = async (lane: number) => {
+  try {
+    const response = await apiClient.post("/judge/now_play", {
+      lane: lane
+    });
+    return response.data as {code: number; id: number; play_num: number};
+  } catch (error) {
+    console.error("Error fetching now play:", error);
   }
 }

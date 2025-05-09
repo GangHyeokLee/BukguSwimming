@@ -1,6 +1,6 @@
 'use client';
 
-import { getLanes } from "@/api/judge/client";
+import { getLanes, getNowPlay } from "@/api/judge/client";
 import { LaneListType } from "@/types/lanes";
 import { parseJwt } from "@/utils/parseJwt";
 import Link from "next/link";
@@ -11,6 +11,7 @@ const ITEMS_PER_PAGE = 4;
 function LaneListPage() {
   const [lane_num, setLane_num] = useState(0);
   const [lanes, setLanes] = useState<LaneListType[]>([]);
+  const [highlightId, setHighlightId] = useState<number | null>(null);
   const [page, setPage] = useState(1);
 
   const totalPages = Math.ceil(lanes.length / ITEMS_PER_PAGE);
@@ -25,9 +26,23 @@ function LaneListPage() {
       (async () => {
         const response = await getLanes(lane_num);
         setLanes(response as LaneListType[]);
+
+        const now = await getNowPlay(parseJwt() as number);
+        if (now) {
+          const index = (response as LaneListType[]).findIndex(
+            (lane) => lane.play_num === now.play_num
+          );
+
+          if (index !== -1) {
+            const newPage = Math.floor(index / ITEMS_PER_PAGE) + 1;
+            setPage(newPage);
+            setHighlightId(now.id);
+          }
+        }
       })();
     }
   }, [lane_num]);
+
 
   const renderPagination = () => {
     const pageNumbers = [];
@@ -87,7 +102,10 @@ function LaneListPage() {
           <Link
             key={lane.id}
             href={`/judge/${lane.id}`}
-            className="block bg-white rounded-xl shadow-sm px-5 py-4 border border-gray-200 hover:bg-gray-100 transition-all"
+            className={`
+      block px-5 py-4 border border-gray-200 rounded-xl shadow-sm transition-all
+      ${lane.id === highlightId ? "bg-blue-100 animate-fadeout" : "bg-white hover:bg-gray-100"}
+    `}
           >
             <div className="flex items-baseline gap-10 justify-between w-full">
               <div className="text-2xl font-semibold mb-2 text-blue-900 whitespace-nowrap">
@@ -109,7 +127,7 @@ function LaneListPage() {
                 {`${String(parseInt(lane.record) % 1000).padStart(3, '0')}`}
               </span>
               <span className={`text-lg font-semibold ${lane.dq ? 'text-red-600' : 'text-green-700'}`}>
-                {lane.dq ? '반칙 있음' : '반칙 없음'}
+                {lane.dq === "결장"?"결장" : lane.dq ? '반칙 있음' : '반칙 없음'}
               </span>
             </div>
           </Link>

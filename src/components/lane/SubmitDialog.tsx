@@ -11,12 +11,17 @@ interface SubmitDialogProps {
 export const SubmitDialog = ({ time, foul, id }: SubmitDialogProps) => {
 
   const handleSubmit = async () => {
-    if (foul === "결장") {
-      const response = await submitResult(id, 59 * 60000 + 59 * 1000 + 999, foul);
-    } else {
-      const response = await submitResult(id, time, foul);
+    if (foul !== "결장" && time === 0) {
+      alert("시간을 입력하세요.");
+      return;
     }
-  }
+
+    const resultTime = foul === "결장"
+      ? (59 * 60000 + 59 * 1000 + 999)
+      : time;
+
+    await submitResult(id, resultTime, foul);
+  };
 
   return (
     <Dialog>
