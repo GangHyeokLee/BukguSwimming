@@ -1,4 +1,5 @@
-import apiClient from "@/api/apiClient";
+import { apiClient } from "@/api/apiClients";
+import Cookies from "js-cookie";
 
 export const login = async (id: string, password: string) => {
     const response: { data: { code: number, access_token: string } } = await apiClient.post("/auth/login", {
@@ -7,6 +8,12 @@ export const login = async (id: string, password: string) => {
 
     if (response.data.code === 200) {
         localStorage.setItem("accessToken", response.data.access_token);
+
+        Cookies.set("accessToken", response.data.access_token, {
+            path: "/",
+            saneSite: "strict",
+            secure: false,
+        });
         return true;
     }
     else {
