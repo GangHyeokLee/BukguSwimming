@@ -6,12 +6,26 @@ import { getPlayStatus } from "@/api/director/client";
 function LaneStatusPage() {
   const [data, setData] = useState<any[]>([]);
   const scrollRef = useRef<HTMLDivElement>(null);
+  const hasScrolledRef = useRef(false);
 
   useEffect(() => {
     fetchData();
     const interval = setInterval(fetchData, 5000); // 5초마다 폴링
     return () => clearInterval(interval);
   }, []);
+
+  useEffect(() => {
+  if (data.length === 0 || !scrollRef.current || hasScrolledRef.current) return;
+
+  const index = findLastCompletedColumnIndex();
+  if (index === -1) return;
+
+  const cellWidth = scrollRef.current.scrollWidth / (data.length + 1);
+  const scrollTo = cellWidth * index - scrollRef.current.clientWidth / 2 + cellWidth / 2;
+
+  scrollRef.current.scrollTo({ left: scrollTo, behavior: "smooth" });
+  hasScrolledRef.current = true; // ✅ 최초 한 번만 실행되도록 설정
+}, [data]);
 
   const fetchData = async () => {
     try {
@@ -82,6 +96,14 @@ function LaneStatusPage() {
     return { label: "", color: "" };
   };
 
+  const findLastCompletedColumnIndex = () => {
+    for (let i = data.length - 1; i >= 0; i--) {
+      const status = getColumnStatusText(i);
+      if (status.label === "완료") return i;
+    }
+    return -1;
+  };
+
   return (
     <div className="p-4 w-full">
       <div className="text-xl font-bold text-center mb-4">감독 기본 UI</div>
@@ -129,22 +151,22 @@ function LaneStatusPage() {
       </div>
 
       <div className="grid grid-cols-6 gap-2 text-sm mt-8">
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-2 whitespace-nowrap">
           <div className="w-5 h-5 bg-red-600 border" /> 결장
         </div>
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-2 whitespace-nowrap">
           <div className="w-5 h-5 bg-yellow-300 border" /> DQ
         </div>
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-2 whitespace-nowrap">
           <div className="w-5 h-5 bg-blue-500 border" /> 정상
         </div>
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-2 whitespace-nowrap">
           <div className="w-5 h-5 bg-gray-400 border" /> 미경기
         </div>
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-2 whitespace-nowrap">
           <div className="w-5 h-5 border" /> 빈레인
         </div>
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-2 whitespace-nowrap">
           <div className="w-5 h-5 bg-green-700 border" /> 완료
         </div>
       </div>
