@@ -12,7 +12,7 @@ import Link from "next/link";
 interface ResponseProps {
   next: number | null;
   previous: number | null;
-  record: string;
+  record: number;
   dq: string;
   id: string;
 }
@@ -23,14 +23,13 @@ function LaneClientComponent({ next, previous, record, dq, id }: ResponseProps) 
 
   useEffect(() => {
     setFoul(dq);
-    const recordSplit = record.split(":");
-    setTime((parseInt(recordSplit[0]) * 60 * 1000) + (parseInt(recordSplit[1]) * 1000) + parseInt(recordSplit[2]));
+    setTime(record);
   }, [])
 
   return (
     <>
       <FoulPanel foul={foul} setFoul={setFoul} />
-      <Timer setTime={setTime} />
+      <Timer time={time} setTime={setTime} />
       <div className="grid grid-cols-3 w-full items-center h-12">
         <div className="flex justify-start min-w-[80px]">
           {previous && (

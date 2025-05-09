@@ -1,6 +1,6 @@
 'use client';
 
-import { getLanes } from "@/api/judge";
+import { getLanes } from "@/api/judge/client";
 import { LaneListType } from "@/types/lanes";
 import { parseJwt } from "@/utils/parseJwt";
 import Link from "next/link";
@@ -104,7 +104,9 @@ function LaneListPage() {
 
             <div className="flex justify-between items-center">
               <span className="text-2xl font-bold text-black">
-                기록: {lane.record}
+                기록:  {`${String(Math.floor(parseInt(lane.record) / 60000)).padStart(2, '0')}:`}
+                {`${String(Math.floor((parseInt(lane.record) % 60000) / 1000)).padStart(2, '0')}.`}
+                {`${String(parseInt(lane.record) % 1000).padStart(3, '0')}`}
               </span>
               <span className={`text-lg font-semibold ${lane.dq ? 'text-red-600' : 'text-green-700'}`}>
                 {lane.dq ? '반칙 있음' : '반칙 없음'}

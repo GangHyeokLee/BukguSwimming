@@ -1,7 +1,6 @@
-import { submitResult } from "@/api/judge";
+import { submitResult } from "@/api/judge/client";
 import { Button } from "@/components/ui/button";
-import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
-import { DialogClose } from "@radix-ui/react-dialog";
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger, DialogClose } from "@/components/ui/dialog";
 
 interface SubmitDialogProps {
   time: number;
@@ -12,7 +11,11 @@ interface SubmitDialogProps {
 export const SubmitDialog = ({ time, foul, id }: SubmitDialogProps) => {
 
   const handleSubmit = async () => {
-    const response = await submitResult(id, time, foul);
+    if (foul === "결장") {
+      const response = await submitResult(id, 59 * 60000 + 59 * 1000 + 999, foul);
+    } else {
+      const response = await submitResult(id, time, foul);
+    }
   }
 
   return (
@@ -23,8 +26,10 @@ export const SubmitDialog = ({ time, foul, id }: SubmitDialogProps) => {
       <DialogContent className="w-fit max-w-[400px] border-2 border-gray-200 rounded-lg">
         <DialogHeader className="flex flex-col gap-5">
           <DialogTitle></DialogTitle>
+          <DialogDescription className="text-xl font-bold text-black break-keep">
+            결장 외에는 시간 기록을 반드시 해주세요.
+          </DialogDescription>
           <div className="text-lg flex flex-col gap-2">
-            <div>시간</div>
             <div className="text-3xl font-bold text-black whitespace-nowrap">
               {time > 60000 && `${Math.floor(time / 60000)}분`}
               &nbsp;
@@ -39,9 +44,11 @@ export const SubmitDialog = ({ time, foul, id }: SubmitDialogProps) => {
             </div>
           </div>
         </DialogHeader>
-        <DialogFooter>
-          <DialogClose className="flex flex-row justify-center gap-5">
+        <DialogFooter className="flex flex-row justify-center gap-5">
+          <DialogClose asChild >
             <Button variant={"destructive"}>취소</Button>
+          </DialogClose>
+          <DialogClose asChild>
             <Button variant={"default"} onClick={handleSubmit}>전송</Button>
           </DialogClose>
         </DialogFooter>

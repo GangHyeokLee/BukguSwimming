@@ -1,4 +1,4 @@
-import { getLaneDetail } from "@/api/judge";
+import { getLaneDetail } from "@/api/judge/server";
 import LaneClientComponent from "@/components/lane/LaneClientComponent";
 import { LaneDetailType } from "@/types/lanes";
 
@@ -29,7 +29,7 @@ export default async function LanePage({ params }: { params: { id: string } }) {
                     </tr>
                 </tbody>
             </table>
-            <LaneClientComponent next={response.next} previous={response.prev} record={response.record} dq={response.dq} id={id} />
+            <LaneClientComponent next={response.next} previous={response.prev} record={parseInt(response.record)} dq={response.dq} id={id} />
         </div>
     ) : (
         <div>
