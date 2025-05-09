@@ -14,42 +14,41 @@ function FoulPanel({ foul, setFoul }: FoulPanelProps) {
   useEffect(() => {
     if (customFoul.length > 0) {
       setFoul(customFoul);
-    } else if (customFoul.length === 0 && foul !== "DQ Type 1" && foul !== "DQ Type 2" && foul !== "DQ Type 3") {
-      setFoul("없음");
+    } else if (customFoul.length === 0 && foul !== "결장" && foul !== "부정출발" && foul !== "턴 반칙") {
+      setFoul("");
     }
   }, [customFoul, foul, setFoul]);
 
   return (
     <div className="w-full flex flex-col gap-4">
-      <div className="text-xl font-bold w-full text-center">반칙</div>
       <Button className="whitespace-nowrap text-2xl font-bold py-4 h-fit border-2"
         onClick={() => {
-          setFoul("없음")
+          setFoul("")
           setCustomFoul("")
         }}
-        variant={foul === "없음" ? "default" : "outline"}>없음</Button>
+        variant={foul === "" ? "default" : "outline"}>반칙 없음</Button>
       <div className="grid grid-cols-3 gap-5">
         <Button
-          className={`whitespace-nowrap text-lg font-bold py-6 border-2  ${foul === "DQ Type 1" ? "border-red-500" : "border-black"}`}
+          className={`whitespace-nowrap text-lg font-bold py-6 border-2  ${foul === "결장" ? "border-red-500" : "border-black"}`}
           onClick={() => {
             setCustomFoul("")
-            setFoul("DQ Type 1")
+            setFoul("결장")
           }}
-          variant={foul === "DQ Type 1" ? "destructive" : "outline"}>DQ Type 1</Button>
+          variant={foul === "결장" ? "destructive" : "outline"}>결장</Button>
         <Button
-          className={`whitespace-nowrap text-lg font-bold py-6 border-2  ${foul === "DQ Type 2" ? "border-red-500" : "border-black"}`}
+          className={`whitespace-nowrap text-lg font-bold py-6 border-2  ${foul === "부정출발" ? "border-red-500" : "border-black"}`}
           onClick={() => {
             setCustomFoul("")
-            setFoul("DQ Type 2")
+            setFoul("부정출발")
           }}
-          variant={foul === "DQ Type 2" ? "destructive" : "outline"}>DQ Type 2</Button>
+          variant={foul === "부정출발" ? "destructive" : "outline"}>부정출발</Button>
         <Button
-          className={`whitespace-nowrap text-lg font-bold py-6 border-2  ${foul === "DQ Type 3" ? "border-red-500" : "border-black"}`}
+          className={`whitespace-nowrap text-lg font-bold py-6 border-2  ${foul === "턴 반칙" ? "border-red-500" : "border-black"}`}
           onClick={() => {
             setCustomFoul("")
-            setFoul("DQ Type 3")
+            setFoul("턴 반칙")
           }}
-          variant={foul === "DQ Type 3" ? "destructive" : "outline"}>DQ Type 3</Button>
+          variant={foul === "턴 반칙" ? "destructive" : "outline"}>턴 반칙</Button>
       </div>
       <Input type="text"
         className={`w-full ${customFoul.length > 0 && 'bg-red-200'} text-xl py-2 border-2 h-fit`}

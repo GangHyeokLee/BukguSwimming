@@ -1,12 +1,20 @@
+import { submitResult } from "@/api/judge";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { DialogClose } from "@radix-ui/react-dialog";
 
 interface SubmitDialogProps {
   time: number;
   foul: string;
+  id: string;
 }
 
-export const SubmitDialog = ({ time, foul }: SubmitDialogProps) => {
+export const SubmitDialog = ({ time, foul, id }: SubmitDialogProps) => {
+
+  const handleSubmit = async () => {
+    const response = await submitResult(id, time, foul);
+  }
+
   return (
     <Dialog>
       <DialogTrigger asChild>
@@ -26,15 +34,16 @@ export const SubmitDialog = ({ time, foul }: SubmitDialogProps) => {
           </div>
           <hr />
           <div className="text-lg mt-5 flex flex-col gap-2">
-            <div>반칙 내용</div>
             <div className="text-xl font-bold w-[280px] break-words">
-              {foul}
+              {foul ? foul : "반칙 없음"}
             </div>
           </div>
         </DialogHeader>
-        <DialogFooter className="flex flex-row justify-center gap-5">
-          <Button variant={"destructive"}>취소</Button>
-          <Button variant={"default"}>확인</Button>
+        <DialogFooter>
+          <DialogClose className="flex flex-row justify-center gap-5">
+            <Button variant={"destructive"}>취소</Button>
+            <Button variant={"default"} onClick={handleSubmit}>전송</Button>
+          </DialogClose>
         </DialogFooter>
       </DialogContent>
     </Dialog>
