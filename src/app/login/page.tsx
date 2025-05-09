@@ -5,6 +5,9 @@ import { Input } from "@/components/ui/input";
 import { LucideEye, LucideEyeClosed } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { login } from "@/api/auth";
+import { parseJwt } from "@/utils/parseJwt";
+import { useRouter } from "next/navigation";
+
 
 export default function LoginPage() {
     const [id, setId] = useState("");
@@ -13,6 +16,8 @@ export default function LoginPage() {
 
     const idRef = useRef<HTMLInputElement>(null);
     const pwdRef = useRef<HTMLInputElement>(null);
+
+    const router = useRouter();
 
     const validation = () => {
         if (idRef.current && id.length === 0) {
@@ -28,8 +33,23 @@ export default function LoginPage() {
 
     const handleLogin = async () => {
         const response = await login(id, password);
+        console.log(response);
         if (!response) {
             alert("아이디 또는 비밀번호가 일치하지 않습니다.");
+        }
+        else {
+            switch (parseJwt()) {
+                case 0:
+                    router.push("/admin");
+                    break;
+                case 7:
+                    router.push("/director");
+                    break;
+                case 8:
+                    break;
+                default:
+                    router.push("/judge");
+            }
         }
     }
 
