@@ -1,17 +1,17 @@
-/** @type {import('next').NextConfig} */
-const nextConfig = {
+import type { NextConfig } from 'next'
+
+const nextConfig: NextConfig = {
+  env: {
+    NEXT_PUBLIC_BACKEND_URL: process.env.NEXT_PUBLIC_BACKEND_URL,
+  },
   async rewrites() {
     return [
       {
-        source: '/auth/:path*',
-        destination: 'http://127.0.0.1:3000/auth/:path*', // Flask API 프록시
+        source: '/api/:path*',
+        destination: `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/:path*`, // Flask API 프록시
       },
-      {
-        source: '/judge/:path*',
-        destination: 'http://127.0.0.1:3000/judge/:path*', // Flask API 프록시
-      },
-    ];
+    ]
   },
-};
+}
 
-module.exports = nextConfig;
+export default nextConfig
