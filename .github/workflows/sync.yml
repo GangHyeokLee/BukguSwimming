@@ -1,4 +1,5 @@
 name: Synchronize to forked repo
+
 on:
   push:
     branches:
@@ -17,16 +18,23 @@ jobs:
           fetch-depth: 0
           ref: master
 
+      - name: Remove workflows before pushing
+        run: |
+          rm -rf .github/workflows
+
       - name: Add remote-url
         run: |
-          git remote add forked_repo https://GangHyeokLee:${{secrets.FORKED_REPO_TOKEN}}@github.com/GangHyeokLee/BukguSwimming.git
+          git remote add forked_repo https://GangHyeokLee:${{ secrets.FORKED_REPO_TOKEN }}@github.com/GangHyeokLee/BukguSwimming.git
           git config user.name "GangHyeokLee"
           git config user.email "rkdgur5381@gmail.com"
+
+      - name: Commit removed workflows
+        run: |
+          git add -A
+          git commit -m "Remove workflows before pushing to fork" || echo "No changes to commit"
 
       - name: Push changes to forked_repo
         run: |
           git push -f forked_repo master
 
       - name: Clean up
-        run: |
-          git remote remove forked_repo
