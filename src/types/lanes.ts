@@ -3,7 +3,7 @@ export interface LaneListType {
   dq: string;
   play_num: number;
   player: string;
-  record: string;
+  record: number;
   swimming_name: string;
   team: string;
 }
@@ -19,4 +19,19 @@ export interface LaneDetailType {
   record: string;
   prev: number | null;
   next: number | null;
+}
+
+export interface PlayerListType{
+   dq: string;
+  id: number;
+  lane: number;
+  player: string;
+  rank: string;
+  record: number;
+  score_id: string;
+  score_rank: number | null;
+  score_value: number | null;
+  swimming_id: number;
+  swimming_name: string;
+  team: string;
 }

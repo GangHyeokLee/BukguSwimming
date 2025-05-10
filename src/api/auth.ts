@@ -22,7 +22,7 @@ export const login = async (id: string, password: string) => {
 }
 
 export const logout = async () => {
-    const response = await apiClient.post("/auth/logout");
+    await apiClient.post("/auth/logout");
     localStorage.removeItem("accessToken");
 }
 

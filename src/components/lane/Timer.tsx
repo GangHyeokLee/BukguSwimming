@@ -27,6 +27,7 @@ function Timer({ time, setTime }: TimerProps) {
             isInternalChange.current = true;
             setTime(newTime);
         }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [minutes, seconds, milliseconds]);
 
     return (

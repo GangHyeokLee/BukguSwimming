@@ -98,7 +98,7 @@ function LaneListPage() {
       {renderPagination()}
 
       <div className="w-full max-w-2xl flex flex-col gap-4">
-        {currentLanes.map((lane, idx) => (
+        {currentLanes.map((lane) => (
           <Link
             key={lane.id}
             href={`/judge/${lane.id}`}
@@ -122,9 +122,9 @@ function LaneListPage() {
 
             <div className="flex justify-between items-center">
               <span className="text-2xl font-bold text-black">
-                기록:  {`${String(Math.floor(parseInt(lane.record) / 60000)).padStart(2, '0')}:`}
-                {`${String(Math.floor((parseInt(lane.record) % 60000) / 1000)).padStart(2, '0')}.`}
-                {`${String(parseInt(lane.record) % 1000).padStart(3, '0')}`}
+                기록:  {`${String(Math.floor(lane.record / 60000)).padStart(2, '0')}:`}
+                {`${String(Math.floor((lane.record % 60000) / 1000)).padStart(2, '0')}.`}
+                {`${String(lane.record % 1000).padStart(3, '0')}`}
               </span>
               <span className={`text-lg font-semibold ${lane.dq ? 'text-red-600' : 'text-green-700'}`}>
                 {lane.dq === "결장"?"결장" : lane.dq ? '반칙 있음' : '반칙 없음'}

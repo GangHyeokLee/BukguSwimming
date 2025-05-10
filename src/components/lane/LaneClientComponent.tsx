@@ -5,7 +5,6 @@ import Timer from "@/components/lane/Timer";
 import { useEffect, useState } from "react";
 
 import { memo } from "react";
-import { AbsentDialog } from "./AbsentDialog";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import Link from "next/link";
 
@@ -24,7 +23,7 @@ function LaneClientComponent({ next, previous, record, dq, id }: ResponseProps) 
   useEffect(() => {
     setFoul(dq);
     setTime(record);
-  }, [])
+  }, [dq, record])
 
   return (
     <>

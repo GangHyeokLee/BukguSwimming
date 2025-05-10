@@ -16,8 +16,9 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     });
 
     res.status(response.status).send(response.data);
-  } catch (error: any) {
-    console.error('Proxy error:', error?.response?.data || error);
-    res.status(error?.response?.status || 500).json(error?.response?.data || { error: 'Proxy failed' });
+  } 
+  catch (error: unknown) {
+    const err = error as { response?: { status: number; data: unknown } };
+    res.status(err?.response?.status || 500).json(err?.response?.data || { error: 'Proxy failed' });
   }
 }

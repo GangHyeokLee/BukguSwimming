@@ -2,9 +2,13 @@
 
 import { useEffect, useState, useRef } from "react";
 import { getPlayStatus } from "@/api/director/client";
+import { PlayerListType } from "@/types/lanes";
 
 function LaneStatusPage() {
-  const [data, setData] = useState<any[]>([]);
+  const [data, setData] = useState<{
+    play_num: number;
+    player_list: PlayerListType[];
+  }[]>([]);
   const scrollRef = useRef<HTMLDivElement>(null);
   const hasScrolledRef = useRef(false);
 
@@ -15,17 +19,17 @@ function LaneStatusPage() {
   }, []);
 
   useEffect(() => {
-  if (data.length === 0 || !scrollRef.current || hasScrolledRef.current) return;
+    if (data.length === 0 || !scrollRef.current || hasScrolledRef.current) return;
 
-  const index = findLastCompletedColumnIndex();
-  if (index === -1) return;
+    const index = findLastCompletedColumnIndex();
+    if (index === -1) return;
 
-  const cellWidth = scrollRef.current.scrollWidth / (data.length + 1);
-  const scrollTo = cellWidth * index - scrollRef.current.clientWidth / 2 + cellWidth / 2;
+    const cellWidth = scrollRef.current.scrollWidth / (data.length + 1);
+    const scrollTo = cellWidth * index - scrollRef.current.clientWidth / 2 + cellWidth / 2;
 
-  scrollRef.current.scrollTo({ left: scrollTo, behavior: "smooth" });
-  hasScrolledRef.current = true; // ✅ 최초 한 번만 실행되도록 설정
-}, [data]);
+    scrollRef.current.scrollTo({ left: scrollTo, behavior: "smooth" });
+    hasScrolledRef.current = true; // ✅ 최초 한 번만 실행되도록 설정
+  }, [data]);
 
   const fetchData = async () => {
     try {
@@ -40,15 +44,15 @@ function LaneStatusPage() {
     }
   };
 
-  const getCellColor = (dq: string, record: number, player: any) => {
+  const getCellColor = (player: PlayerListType | undefined) => {
     if (!player) return ""; // 빈 레인
-    if (dq === "결장") return "bg-red-600";
-    if (dq && dq !== "") return "bg-yellow-300";
-    if (record && record > 0) return "bg-blue-500";
+    if (player.dq === "결장") return "bg-red-600";
+    if (player.dq && player.dq !== "") return "bg-yellow-300";
+    if (player.record && player.record > 0) return "bg-blue-500";
     return "bg-gray-400"; // 미경기
   };
 
-  const handleDetail = (player: any) => {
+  const handleDetail = (player: PlayerListType) => {
     alert(`선수: ${player.player}\n팀: ${player.team}\n기록: ${formatRecord(player.record)}`);
   };
 
@@ -67,7 +71,7 @@ function LaneStatusPage() {
 
     for (let lane = 1; lane <= 6; lane++) {
       const play = data[colIndex];
-      const player = play?.player_list.find((p: any) => p.lane === lane);
+      const player = play?.player_list.find((p: PlayerListType) => p.lane === lane);
       if (player && !player.dq && player.record === 0) {
         hasPending = true;
         allDone = false;
@@ -80,7 +84,7 @@ function LaneStatusPage() {
     for (let i = colIndex + 1; i < data.length; i++) {
       for (let lane = 1; lane <= 6; lane++) {
         const play = data[i];
-        const player = play?.player_list.find((p: any) => p.lane === lane);
+        const player = play?.player_list.find((p: PlayerListType) => p.lane === lane);
         if (player && !player.dq && player.record !== 0) {
           hasFollowingConfirmed = true;
           break;
@@ -129,11 +133,11 @@ function LaneStatusPage() {
           {[1, 2, 3, 4, 5, 6].map((laneNum) => (
             <div key={`lane-${laneNum}`} className="contents">
               {data.map((play) => {
-                const player = play.player_list.find((p: any) => p.lane === laneNum);
+                const player = play.player_list.find((p: PlayerListType) => p.lane === laneNum);
                 return (
                   <button
                     key={`${play.play_num}-${laneNum}`}
-                    className={`aspect-square border ${getCellColor(player?.dq, player?.record, player)}`}
+                    className={`aspect-square border ${getCellColor(player)}`}
                     onClick={() => player && handleDetail(player)}
                   />
                 );
@@ -150,7 +154,7 @@ function LaneStatusPage() {
         </div>
       </div>
 
-      <div className="grid grid-cols-6 gap-2 text-sm mt-8">
+      <div className="grid grid-cols-5 gap-2 text-sm mt-8">
         <div className="flex items-center gap-2 whitespace-nowrap">
           <div className="w-5 h-5 bg-red-600 border" /> 결장
         </div>
@@ -166,9 +170,9 @@ function LaneStatusPage() {
         <div className="flex items-center gap-2 whitespace-nowrap">
           <div className="w-5 h-5 border" /> 빈레인
         </div>
-        <div className="flex items-center gap-2 whitespace-nowrap">
+        {/* <div className="flex items-center gap-2 whitespace-nowrap">
           <div className="w-5 h-5 bg-green-700 border" /> 완료
-        </div>
+        </div> */}
       </div>
     </div>
   );

@@ -2,7 +2,7 @@ import { LaneDetailType } from "@/types/lanes";
 import { cookies } from "next/headers";
 import { serverApiClient } from '@/api/apiClients';
 
-export const getLaneDetail = async (playdata_id: string, token?: string) => {
+export const getLaneDetail = async (playdata_id: string) => {
   console.log(playdata_id)
   try {
     const response = await serverApiClient.get(`/judge/req?playdata_id=${playdata_id}`, {
