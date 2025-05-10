@@ -3,7 +3,11 @@ import LaneClientComponent from "@/components/lane/LaneClientComponent";
 import { LaneDetailType } from "@/types/lanes";
 import Link from "next/link";
 
-export default async function LanePage({ params }: { params: { id: string } }) {
+interface PageProps{
+    params: Promise<{id: string}>;
+}
+
+export default async function LanePage({ params }: PageProps) {
     const { id } = await params;
 
     const response: LaneDetailType = await getLaneDetail(id);
