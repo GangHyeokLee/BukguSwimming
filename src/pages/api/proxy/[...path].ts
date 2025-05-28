@@ -14,11 +14,11 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       headers: req.headers,
       data: ['POST', 'PUT', 'PATCH'].includes(req.method || '') ? req.body : undefined,
     });
-
     res.status(response.status).send(response.data);
   } 
   catch (error: unknown) {
-    const err = error as { response?: { status: number; data: unknown } };
+    const err = error as { response?: { status: number; data: unknown, config: unknown } };
+    console.log(err?.config?.headers)
     res.status(err?.response?.status || 500).json(err?.response?.data || { error: 'Proxy failed' });
   }
 }
