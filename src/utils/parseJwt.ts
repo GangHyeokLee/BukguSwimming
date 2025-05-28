@@ -1,5 +1,5 @@
-export function parseJwt() {
-  const token = localStorage.getItem('accessToken');
+export function parseJwt(accessToken: string = "") {
+  const token = accessToken || localStorage.getItem('accessToken');
   if (token) {
     try {
       const base64Url = token.split('.')[1];
