@@ -1,6 +1,7 @@
 'use client';
 
 import { getLanes, getNowPlay } from "@/api/judge/client";
+import { SidePanel } from "@/components/sidepanel/sidepanel";
 import { LaneListType } from "@/types/lanes";
 import { parseJwt } from "@/utils/parseJwt";
 import Link from "next/link";
@@ -91,8 +92,12 @@ function LaneListPage() {
 
   return (
     <div className="px-5 py-6 flex flex-col items-center w-full gap-6 overflow-x-hidden bg-gray-50">
-      <div className="text-2xl font-bold text-center">
-        {lane_num}번 레인 선수 목록
+      <div className="w-full grid grid-cols-3 items-center">
+        <div></div>
+        <div className="text-2xl font-bold flex justify-center whitespace-nowrap">
+          {lane_num}번 레인 선수 목록
+        </div>
+        <div className="flex justify-end"><SidePanel /></div>
       </div>
 
       {renderPagination()}
@@ -127,7 +132,7 @@ function LaneListPage() {
                 {`${String(lane.record % 1000).padStart(3, '0')}`}
               </span>
               <span className={`text-lg font-semibold ${lane.dq ? 'text-red-600' : 'text-green-700'}`}>
-                {lane.dq === "결장"?"결장" : lane.dq ? '반칙 있음' : '반칙 없음'}
+                {lane.dq === "결장" ? "결장" : lane.dq ? '반칙 있음' : '반칙 없음'}
               </span>
             </div>
           </Link>

@@ -3,6 +3,7 @@
 import { useEffect, useState, useRef } from "react";
 import { getPlayStatus } from "@/api/director/client";
 import { PlayerListType } from "@/types/lanes";
+import { SidePanel } from "@/components/sidepanel/sidepanel";
 
 function LaneStatusPage() {
   const [data, setData] = useState<{
@@ -110,7 +111,12 @@ function LaneStatusPage() {
 
   return (
     <div className="p-4 w-full">
-      <div className="text-xl font-bold text-center mb-4">감독 기본 UI</div>
+      <div className="grid grid-cols-3 items-center">
+        <div></div>
+        <div className="text-xl font-bold text-center mb-4">감독 기본 UI</div>
+        <div className="flex justify-end"><SidePanel/></div>
+      </div>
+      
 
       <div className="overflow-x-auto whitespace-nowrap" ref={scrollRef}>
         <div
