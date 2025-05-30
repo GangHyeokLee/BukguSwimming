@@ -33,19 +33,17 @@ export default function LoginPage() {
 
     const handleLogin = async () => {
         const response = await login(id, password);
-        console.log(response);
         if (!response) {
             alert("아이디 또는 비밀번호가 일치하지 않습니다.");
         }
         else {
             switch (parseJwt()) {
+                case 8:
                 case 0:
                     router.push("/admin");
                     break;
                 case 7:
                     router.push("/director");
-                    break;
-                case 8:
                     break;
                 default:
                     router.push("/judge");

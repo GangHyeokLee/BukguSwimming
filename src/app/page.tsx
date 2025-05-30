@@ -6,9 +6,10 @@ import { redirect } from "next/navigation";
 export default async function Home() {
 
   const cookieStore = await cookies();
-  const role = parseJwt(cookieStore.get("accessToken")?.value);
+  const token = cookieStore.get("accessToken")?.value;
+  const role = parseJwt(token);
 
-  if (!role) {
+  if (!token) {
     redirect("/login");
   } else if ([1, 2, 3, 4, 5, 6].includes(role)) {
     redirect("/judge");

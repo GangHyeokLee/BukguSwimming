@@ -77,6 +77,11 @@ export default function Page() {
       handleSignup();
     }
   }
+
+  const handleCancle = ()=>{
+    router.push("/admin");
+  }
+
   return (
     <div className="px-3 flex flex-col justify-center items-center w-full h-screen">
       <div className="px-5 text-3xl font-bold flex flex-col gap-3 w-full">
@@ -97,7 +102,7 @@ export default function Page() {
           <label htmlFor="id" className="w-full">이름</label>
           <Input
             ref={nameRef}
-            id="id" type="text" className="py-2 px-5 w-full text-xl h-fit" value={name}
+            id="name" type="text" className="py-2 px-5 w-full text-xl h-fit" value={name}
             onChange={(e) => setName(e.target.value)} />
         </div>
 
@@ -148,7 +153,7 @@ export default function Page() {
           <label htmlFor="password" className="w-full">비밀번호 확인</label>
           <div className="relative w-full">
             <Input
-              id="password"
+              id="passwordChk"
               ref={pwdCRef}
               type={showPassword ? "text" : "password"}
               className="py-2 px-5 w-full pr-12 text-xl h-fit"  // right padding for the button
@@ -166,8 +171,12 @@ export default function Page() {
           </div>
         </div>
 
-        <Button type="submit"
+        <div className="flex gap-5">
+          <Button type="reset" className="mt-5 text-xl px-5 py-2 w-full bg-red-500 text-white rounded h-fit" onClick={handleCancle}>취소</Button>
+           <Button type="submit"
           className="mt-5 text-xl px-5 py-2 w-full bg-gray-500 text-white rounded h-fit">회원가입</Button>
+        </div>
+       
       </form>
     </div>
   )
