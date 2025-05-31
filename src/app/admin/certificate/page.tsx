@@ -190,7 +190,19 @@ export default function CertiSelectPage() {
                       <TableCell>{formatRecord(player?.record || 0)}</TableCell>
                       <TableCell>{player?.dq}</TableCell>
                       <TableCell>
-                        {player?.rank && player?.rank <= 3 && <Button>상장</Button>}
+                        {player?.rank && player?.rank <= 3 &&
+                          <Button
+                            onClick={() => {
+                              const params = new URLSearchParams({
+                                player: player?.player || "",
+                                record: formatRecord(player?.record || 0),
+                                rank: player?.rank?.toString() || "",
+                                swimming_name: player?.swimming_name || "",
+                                team: player?.team || ""
+                              });
+                              window.open(`/admin/certificate/print?${params.toString()}`, '_blank');
+                            }}
+                          >인쇄</Button>}
                       </TableCell>
                     </TableRow>
                   );

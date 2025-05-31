@@ -12,6 +12,9 @@ export default {
         background: "var(--background)",
         foreground: "var(--foreground)",
       },
+      fontFamily:{
+        gulim:['Gulim', '굴림', 'sans-serif'],
+      }
     },
   },
   plugins: [],
