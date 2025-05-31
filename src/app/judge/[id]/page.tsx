@@ -5,11 +5,11 @@ import { LaneDetailType } from "@/types/lanes";
 import Link from "next/link";
 
 interface PageProps{
-    params: Promise<{id: string}>;
+    params: {id: string};
 }
 
 export default async function LanePage({ params }: PageProps) {
-    const { id } = await params;
+    const { id } = params;
     const response: LaneDetailType = await getLaneDetail(id);
 
     return (response ? (

@@ -30,6 +30,7 @@ function LaneStatusPage() {
 
     scrollRef.current.scrollTo({ left: scrollTo, behavior: "smooth" });
     hasScrolledRef.current = true; // ✅ 최초 한 번만 실행되도록 설정
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [data]);
 
   const fetchData = async () => {
