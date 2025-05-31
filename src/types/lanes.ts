@@ -21,12 +21,12 @@ export interface LaneDetailType {
   next: number | null;
 }
 
-export interface PlayerListType{
-   dq: string;
+export interface PlayerListType {
+  dq: string;
   id: number;
   lane: number;
   player: string;
-  rank: string;
+  rank: number;
   record: number;
   score_id: string;
   score_rank: number | null;

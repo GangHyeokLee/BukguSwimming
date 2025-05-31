@@ -10,9 +10,7 @@ interface PageProps{
 
 export default async function LanePage({ params }: PageProps) {
     const { id } = await params;
-
     const response: LaneDetailType = await getLaneDetail(id);
-    console.log(response);
 
     return (response ? (
         <div className="px-3 flex flex-col py-10 w-full items-center gap-8">
