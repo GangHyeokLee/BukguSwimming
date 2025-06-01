@@ -38,3 +38,5 @@ jobs:
           git push -f forked_repo master
 
       - name: Clean up
+        run: |
+          git remote remove forked_repo
