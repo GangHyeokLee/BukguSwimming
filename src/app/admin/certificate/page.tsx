@@ -124,7 +124,6 @@ export default function CertiSelectPage() {
                 return (
                   <button
                     key={`${play.play_num}-${laneNum}`}
-                    value={play.player_list[laneNum]?.rank}
                     className={`aspect-square border ${getCellColor(player)} ${selectedCol === play.play_num ? 'border-r-2 border-l-2 border-red-500' : ''}`}
                     onClick={() => setSelectedCol(play.play_num)}
                   />
@@ -212,7 +211,6 @@ export default function CertiSelectPage() {
           </div>
         )
       }
-
     </div >
   );
 }

@@ -4,12 +4,16 @@ import { useEffect, useState, useRef } from "react";
 import { getPlayStatus } from "@/api/director/client";
 import { PlayerListType } from "@/types/lanes";
 import { SidePanel } from "@/components/sidepanel/sidepanel";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 
 function LaneStatusPage() {
+  const [selectedCol, setSelectedCol] = useState(-1);
   const [data, setData] = useState<{
     play_num: number;
     player_list: PlayerListType[];
   }[]>([]);
+  const [selectedPlay, setSelectedPlay] = useState<PlayerListType[]>();
+
   const scrollRef = useRef<HTMLDivElement>(null);
   const hasScrolledRef = useRef(false);
 
@@ -18,6 +22,10 @@ function LaneStatusPage() {
     const interval = setInterval(fetchData, 5000); // 5초마다 폴링
     return () => clearInterval(interval);
   }, []);
+
+  useEffect(() => {
+    setSelectedPlay(data.find((play) => play.play_num === selectedCol)?.player_list)
+  }, [selectedCol, data])
 
   useEffect(() => {
     if (data.length === 0 || !scrollRef.current || hasScrolledRef.current) return;
@@ -52,10 +60,6 @@ function LaneStatusPage() {
     if (player.dq && player.dq !== "") return "bg-yellow-300";
     if (player.record && player.record > 0) return "bg-blue-500";
     return "bg-gray-400"; // 미경기
-  };
-
-  const handleDetail = (player: PlayerListType) => {
-    alert(`선수: ${player.player}\n팀: ${player.team}\n기록: ${formatRecord(player.record)}`);
   };
 
   const formatRecord = (ms: number) => {
@@ -115,9 +119,9 @@ function LaneStatusPage() {
       <div className="grid grid-cols-3 items-center">
         <div></div>
         <div className="text-xl font-bold text-center mb-4">감독 기본 UI</div>
-        <div className="flex justify-end"><SidePanel/></div>
+        <div className="flex justify-end"><SidePanel /></div>
       </div>
-      
+
 
       <div className="overflow-x-auto whitespace-nowrap" ref={scrollRef}>
         <div
@@ -144,8 +148,8 @@ function LaneStatusPage() {
                 return (
                   <button
                     key={`${play.play_num}-${laneNum}`}
-                    className={`aspect-square border ${getCellColor(player)}`}
-                    onClick={() => player && handleDetail(player)}
+                    className={`aspect-square border ${getCellColor(player)} ${selectedCol === play.play_num ? 'border-r-2 border-l-2 border-red-500' : ''}`}
+                    onClick={() => setSelectedCol(play.play_num)}
                   />
                 );
               })}
@@ -177,10 +181,44 @@ function LaneStatusPage() {
         <div className="flex items-center gap-2 whitespace-nowrap">
           <div className="w-5 h-5 border" /> 빈레인
         </div>
-        {/* <div className="flex items-center gap-2 whitespace-nowrap">
-          <div className="w-5 h-5 bg-green-700 border" /> 완료
-        </div> */}
       </div>
+      {/* 경기 정보 표시 */}
+      {
+        selectedPlay && (
+          <div className="mt-6 border p-4 rounded bg-gray-50">
+            <h2 className="text-lg font-semibold mb-2 text-center">
+              {selectedPlay[0].swimming_name}
+            </h2>
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead>레인</TableHead>
+                  <TableHead>이름</TableHead>
+                  <TableHead>소속</TableHead>
+                  <TableHead>순위</TableHead>
+                  <TableHead>기록</TableHead>
+                  <TableHead>반칙</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {[1, 2, 3, 4, 5, 6].map((laneNum) => {
+                  const player = selectedPlay.find((p: PlayerListType) => p.lane === laneNum);
+                  return (
+                    <TableRow key={`lane-${laneNum}`} >
+                      <TableCell>{laneNum}</TableCell>
+                      <TableCell>{player?.player}</TableCell>
+                      <TableCell>{player?.team}</TableCell>
+                      <TableCell>{player?.rank}</TableCell>
+                      <TableCell>{formatRecord(player?.record || 0)}</TableCell>
+                      <TableCell>{player?.dq}</TableCell>
+                    </TableRow>
+                  );
+                })}
+              </TableBody>
+            </Table>
+          </div>
+        )
+      }
     </div>
   );
 }
