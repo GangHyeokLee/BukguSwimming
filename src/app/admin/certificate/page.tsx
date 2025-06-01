@@ -1,6 +1,6 @@
 "use client"
 
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useState } from "react";
 import { getPlayStatus } from "@/api/director/client";
 import { PlayerListType } from "@/types/lanes";
 import { SidePanel } from "@/components/sidepanel/sidepanel";
