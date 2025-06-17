@@ -1,7 +1,8 @@
 import axios from 'axios';
 
 export const apiClient = axios.create({
-  baseURL: '/api/proxy',
+  //2025 06 17 강병오 SSL 적용위해 추가
+  baseURL: '/bukguswim/api/proxy',
   withCredentials: true,
 });
 
