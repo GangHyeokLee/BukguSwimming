@@ -1,7 +1,7 @@
 "use client"
 
 import { useEffect, useState } from "react";
-import { getPlayStatus } from "@/api/director/client";
+import { getPlayStatus } from "@/api/admin/client";
 import { PlayerListType } from "@/types/lanes";
 import { SidePanel } from "@/components/sidepanel/sidepanel";
 import Link from "next/link";
@@ -11,11 +11,19 @@ import { Button } from "@/components/ui/button";
 export default function CertiSelectPage() {
   const [selectedCol, setSelectedCol] = useState(-1);
   const [data, setData] = useState<{
-    play_num: number;
+    swimming_id: number;
     player_list: PlayerListType[];
   }[]>([]);
 
   const [selectedPlay, setSelectedPlay] = useState<PlayerListType[]>();
+  const [editingRow, setEditingRow] = useState<number | null>(null);
+  const [editRecord, setEditRecord] = useState("");
+  const [editDQ, setEditDQ] = useState("");
+
+  // 기록 입력을 분/초/밀리초로 분리
+  const [editMin, setEditMin] = useState(0);
+  const [editSec, setEditSec] = useState(0);
+  const [editMs, setEditMs] = useState(0);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -34,16 +42,8 @@ export default function CertiSelectPage() {
   }, []);
 
   useEffect(() => {
-    setSelectedPlay(data.find((play) => play.play_num === selectedCol)?.player_list)
+    setSelectedPlay(data.find((play) => play.swimming_id === selectedCol)?.player_list)
   }, [selectedCol, data])
-
-  const getCellColor = (player: PlayerListType | undefined) => {
-    if (!player) return ""; // 빈 레인
-    if (player.dq === "결장") return "bg-red-600";
-    if (player.dq && player.dq !== "") return "bg-yellow-300";
-    if (player.record && player.record > 0) return "bg-blue-500";
-    return "bg-gray-400"; // 미경기
-  };
 
   const formatRecord = (ms: number) => {
     const totalSeconds = Math.floor(ms / 1000);
@@ -55,12 +55,11 @@ export default function CertiSelectPage() {
 
   const getColumnStatusText = (colIndex: number) => {
     let hasPending = false;
-    let hasFollowingConfirmed = false;
     let allDone = true;
 
-    for (let lane = 1; lane <= 6; lane++) {
-      const play = data[colIndex];
-      const player = play?.player_list.find((p: PlayerListType) => p.lane === lane);
+    // player_list 전체 순회
+    const play = data[colIndex];
+    for (const player of play?.player_list ?? []) {
       if (player && !player.dq && player.record === 0) {
         hasPending = true;
         allDone = false;
@@ -70,23 +69,42 @@ export default function CertiSelectPage() {
       }
     }
 
-    for (let i = colIndex + 1; i < data.length; i++) {
-      for (let lane = 1; lane <= 6; lane++) {
-        const play = data[i];
-        const player = play?.player_list.find((p: PlayerListType) => p.lane === lane);
-        if (player && !player.dq && player.record !== 0) {
-          hasFollowingConfirmed = true;
-          break;
-        }
-      }
-      if (hasFollowingConfirmed) break;
-    }
-
     if (allDone) return { label: "완료", color: "bg-green-700 text-white" };
     if (hasPending) return { label: "진행중", color: "bg-orange-400 text-white" };
-    if (!hasPending && hasFollowingConfirmed) return { label: "오류!", color: "bg-red-600 text-white" };
 
     return { label: "", color: "" };
+  };
+
+  const handleEditClick = (player: PlayerListType) => {
+    setEditingRow(player.id);
+    // ms를 분/초/밀리초로 분리
+    const ms = player.record || 0;
+    setEditMin(Math.floor(ms / 60000));
+    setEditSec(Math.floor((ms % 60000) / 1000));
+    setEditMs(ms % 1000);
+    setEditDQ(player.dq || "");
+  };
+
+  const handleEditCancel = () => {
+    setEditingRow(null);
+    setEditMin(0);
+    setEditSec(0);
+    setEditMs(0);
+    setEditDQ("");
+  };
+
+  const handleEditSave = (id: number) => {
+    if (!selectedPlay) return;
+    // 입력값 보정
+    const min = Math.max(0, editMin);
+    const sec = Math.min(59, Math.max(0, editSec));
+    const ms = Math.min(999, Math.max(0, editMs));
+    const totalMs = min * 60000 + sec * 1000 + ms;
+    const newPlay = selectedPlay.map(p =>
+      p.id === id ? { ...p, record: totalMs, dq: editDQ } : p
+    );
+    setSelectedPlay(newPlay);
+    setEditingRow(null);
   };
 
   return (
@@ -109,52 +127,14 @@ export default function CertiSelectPage() {
           {data.map((col, index) => {
             const status = getColumnStatusText(index);
             return (
-              <div key={`header-${col.play_num}`} className={`border text-sm text-center ${selectedCol === col.play_num ? 'border-t-2 border-r-2 border-l-2 border-double border-red-500' : ''}`}>
-                <div>{col.play_num}</div>
+              <div key={`header-${col.swimming_id}`} className={`border text-sm text-center ${selectedCol === col.swimming_id ? 'border-t-2 border-r-2 border-l-2 border-double border-red-500' : ''}`}
+                onClick={() => setSelectedCol(col.swimming_id)}
+              >
+                <div>{col.swimming_id}</div>
                 <div className={`text-xs mt-1 ${status.color}`}>{status.label}</div>
               </div>
             );
           })}
-          <div className="text-sm text-center p-1 border">상태</div>
-
-          {[1, 2, 3, 4, 5, 6].map((laneNum) => (
-            <div key={`lane-${laneNum}`} className="contents">
-              {data.map((play) => {
-                const player = play.player_list.find((p: PlayerListType) => p.lane === laneNum);
-                return (
-                  <button
-                    key={`${play.play_num}-${laneNum}`}
-                    className={`aspect-square border ${getCellColor(player)} ${selectedCol === play.play_num ? 'border-r-2 border-l-2 border-red-500' : ''}`}
-                    onClick={() => setSelectedCol(play.play_num)}
-                  />
-                );
-              })}
-              <div className="aspect-square border bg-white"></div>
-            </div>
-          ))}
-
-          {data.map((_, index) => (
-            <div key={`status-placeholder-${index}`}></div>
-          ))}
-          <div></div>
-        </div>
-      </div>
-
-      <div className="grid grid-cols-5 gap-2 text-sm mt-8">
-        <div className="flex items-center gap-2 whitespace-nowrap">
-          <div className="w-5 h-5 bg-red-600 border" /> 결장
-        </div>
-        <div className="flex items-center gap-2 whitespace-nowrap">
-          <div className="w-5 h-5 bg-yellow-300 border" /> DQ
-        </div>
-        <div className="flex items-center gap-2 whitespace-nowrap">
-          <div className="w-5 h-5 bg-blue-500 border" /> 정상
-        </div>
-        <div className="flex items-center gap-2 whitespace-nowrap">
-          <div className="w-5 h-5 bg-gray-400 border" /> 미경기
-        </div>
-        <div className="flex items-center gap-2 whitespace-nowrap">
-          <div className="w-5 h-5 border" /> 빈레인
         </div>
       </div>
 
@@ -168,26 +148,70 @@ export default function CertiSelectPage() {
             <Table>
               <TableHeader>
                 <TableRow>
-                  <TableHead>레인</TableHead>
+                  <TableHead>번호</TableHead>
                   <TableHead>이름</TableHead>
                   <TableHead>소속</TableHead>
                   <TableHead>순위</TableHead>
                   <TableHead>기록</TableHead>
                   <TableHead>반칙</TableHead>
                   <TableHead></TableHead>
+                  <TableHead>수정</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {[1, 2, 3, 4, 5, 6].map((laneNum) => {
-                  const player = selectedPlay.find((p: PlayerListType) => p.lane === laneNum);
+                {selectedPlay.map((player, idx) => {
+                  const isEditing = editingRow === player.id;
                   return (
-                    <TableRow key={`lane-${laneNum}`} >
-                      <TableCell>{laneNum}</TableCell>
+                    <TableRow key={player.id} >
+                      <TableCell>{idx + 1}</TableCell>
                       <TableCell>{player?.player}</TableCell>
                       <TableCell>{player?.team}</TableCell>
                       <TableCell>{player?.rank}</TableCell>
-                      <TableCell>{formatRecord(player?.record || 0)}</TableCell>
-                      <TableCell>{player?.dq}</TableCell>
+                      <TableCell>
+                        {isEditing ? (
+                          <div className="flex gap-1 items-center">
+                            <input
+                              type="number"
+                              min={0}
+                              value={editMin}
+                              onChange={e => setEditMin(Math.max(0, parseInt(e.target.value) || 0))}
+                              className="border px-1 w-8 text-right"
+                            />
+                            :
+                            <input
+                              type="number"
+                              min={0}
+                              max={59}
+                              value={editSec}
+                              onChange={e => setEditSec(Math.min(59, Math.max(0, parseInt(e.target.value) || 0)))}
+                              className="border px-1 w-8 text-right"
+                            />
+                            .
+                            <input
+                              type="number"
+                              min={0}
+                              max={999}
+                              value={editMs}
+                              onChange={e => setEditMs(Math.min(999, Math.max(0, parseInt(e.target.value) || 0)))}
+                              className="border px-1 w-12 text-right"
+                            />
+                          </div>
+                        ) : (
+                          formatRecord(player?.record || 0)
+                        )}
+                      </TableCell>
+                      <TableCell>
+                        {isEditing ? (
+                          <input
+                            type="text"
+                            value={editDQ}
+                            onChange={e => setEditDQ(e.target.value)}
+                            className="border px-1 w-16"
+                          />
+                        ) : (
+                          player?.dq
+                        )}
+                      </TableCell>
                       <TableCell>
                         {player?.rank && player?.rank <= 3 &&
                           <Button
@@ -202,6 +226,16 @@ export default function CertiSelectPage() {
                               window.open(`/admin/certificate/print?${params.toString()}`, '_blank');
                             }}
                           >인쇄</Button>}
+                      </TableCell>
+                      <TableCell>
+                        {isEditing ? (
+                          <>
+                            <Button size="sm" className="mr-1" onClick={() => handleEditSave(player.id)}>완료</Button>
+                            <Button size="sm" variant="secondary" onClick={handleEditCancel}>취소</Button>
+                          </>
+                        ) : (
+                          <Button size="sm" variant="outline" onClick={() => handleEditClick(player)}>수정</Button>
+                        )}
                       </TableCell>
                     </TableRow>
                   );
