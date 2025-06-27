@@ -1,7 +1,7 @@
 "use client"
 
 import { useEffect, useState } from "react";
-import { getPlayStatus } from "@/api/admin/client";
+import { getPlayStatus, reloadPlayStatus, updatePlayRecord } from "@/api/admin/client";
 import { PlayerListType } from "@/types/lanes";
 import { SidePanel } from "@/components/sidepanel/sidepanel";
 import Link from "next/link";
@@ -17,7 +17,6 @@ export default function CertiSelectPage() {
 
   const [selectedPlay, setSelectedPlay] = useState<PlayerListType[]>();
   const [editingRow, setEditingRow] = useState<number | null>(null);
-  const [editRecord, setEditRecord] = useState("");
   const [editDQ, setEditDQ] = useState("");
 
   // 기록 입력을 분/초/밀리초로 분리
@@ -93,17 +92,25 @@ export default function CertiSelectPage() {
     setEditDQ("");
   };
 
-  const handleEditSave = (id: number) => {
+  const handleEditSave = async (swimming_id: number, id: number) => {
     if (!selectedPlay) return;
     // 입력값 보정
-    const min = Math.max(0, editMin);
-    const sec = Math.min(59, Math.max(0, editSec));
-    const ms = Math.min(999, Math.max(0, editMs));
-    const totalMs = min * 60000 + sec * 1000 + ms;
-    const newPlay = selectedPlay.map(p =>
-      p.id === id ? { ...p, record: totalMs, dq: editDQ } : p
-    );
-    setSelectedPlay(newPlay);
+    const totalMs = editMin * 60000 + editSec * 1000 + editMs;
+
+    const updateRes = await updatePlayRecord(swimming_id, id, totalMs, editDQ);
+    if (updateRes === true) {
+      const response = await reloadPlayStatus(swimming_id);
+      const updated = response.data?.[0];
+      if (updated) {
+        setData(prevData => prevData.map(d =>
+          d.swimming_id === swimming_id ? { ...d, player_list: updated.player_list } : d
+        ));
+        setSelectedPlay(updated.player_list);
+      }
+    }
+    else{
+      alert("수정 실패");
+    }
     setEditingRow(null);
   };
 
@@ -169,13 +176,13 @@ export default function CertiSelectPage() {
                       <TableCell>{player?.rank}</TableCell>
                       <TableCell>
                         {isEditing ? (
-                          <div className="flex gap-1 items-center">
+                          <div className="flex gap-1 items-center"> {/* input 3개 합친 너비에 맞춤 */}
                             <input
                               type="number"
                               min={0}
                               value={editMin}
                               onChange={e => setEditMin(Math.max(0, parseInt(e.target.value) || 0))}
-                              className="border px-1 w-8 text-right"
+                              className="border px-1 w-16 text-right"
                             />
                             :
                             <input
@@ -184,7 +191,7 @@ export default function CertiSelectPage() {
                               max={59}
                               value={editSec}
                               onChange={e => setEditSec(Math.min(59, Math.max(0, parseInt(e.target.value) || 0)))}
-                              className="border px-1 w-8 text-right"
+                              className="border px-1 w-12 text-right"
                             />
                             .
                             <input
@@ -193,7 +200,7 @@ export default function CertiSelectPage() {
                               max={999}
                               value={editMs}
                               onChange={e => setEditMs(Math.min(999, Math.max(0, parseInt(e.target.value) || 0)))}
-                              className="border px-1 w-12 text-right"
+                              className="border px-1 w-16 text-right"
                             />
                           </div>
                         ) : (
@@ -202,18 +209,18 @@ export default function CertiSelectPage() {
                       </TableCell>
                       <TableCell>
                         {isEditing ? (
-                          <input
-                            type="text"
+                          <textarea
                             value={editDQ}
                             onChange={e => setEditDQ(e.target.value)}
-                            className="border px-1 w-16"
+                            className="border px-1 w-40 resize-none" // 더 넓고 높이 고정
                           />
                         ) : (
                           player?.dq
                         )}
                       </TableCell>
                       <TableCell>
-                        {player?.rank && player?.rank <= 3 &&
+                        {/* 인쇄 버튼: 수정 중인 row에서는 숨김 */}
+                        {!isEditing && player?.rank && player?.rank <= 3 &&
                           <Button
                             onClick={() => {
                               const params = new URLSearchParams({
@@ -224,13 +231,14 @@ export default function CertiSelectPage() {
                                 team: player?.team || ""
                               });
                               window.open(`/admin/certificate/print?${params.toString()}`, '_blank');
-                            }}
-                          >인쇄</Button>}
+                            }}>
+                            인쇄
+                          </Button>}
                       </TableCell>
                       <TableCell>
                         {isEditing ? (
                           <>
-                            <Button size="sm" className="mr-1" onClick={() => handleEditSave(player.id)}>완료</Button>
+                            <Button size="sm" className="mr-1" onClick={() => handleEditSave(selectedCol, player.id)}>완료</Button>
                             <Button size="sm" variant="secondary" onClick={handleEditCancel}>취소</Button>
                           </>
                         ) : (

@@ -1,20 +1,8 @@
 import { apiClient } from '@/api/apiClients';
 import { PlayerListType } from "@/types/lanes";
 
-export const getTeamScores = async () => {
-  const response = await apiClient.get("/admin/team_scores");
-  return response.data as {
-    count: number;
-    data: {
-      team: string;
-      total_score: number;
-    }[];
-    status: string;
-  }
-}
-
 export const printCertificate = async (id: number) => {
-  const response = await apiClient.post("/admin/print_prize", {id: id});
+  const response = await apiClient.post("/admin/print_prize", { id: id });
   return response.data as {
     cert_data: {
       cert_data: string;
@@ -51,3 +39,24 @@ export const getPlayStatus = async () => {
     }[];
   };
 };
+
+export const reloadPlayStatus = async (swimming_id: number) => {
+  const response = await apiClient.post("/admin/swimming", { id: swimming_id });
+  return response.data as {
+    code: number;
+    data: {
+      swimming_id: number;
+      player_list: PlayerListType[];
+    }[];
+  };
+};
+
+export const updatePlayRecord = async (swimming_id: number, id: number, record: number, dq: string) => {
+  const response = await apiClient.post("/admin/record_modify", {
+    id: id,
+    swimming_id: swimming_id,
+    record: record,
+    dq: dq
+  });
+  return response.status === 200 ? true : false;
+}
