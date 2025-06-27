@@ -1,32 +1,10 @@
 import { apiClient } from '@/api/apiClients';
+import { CertificateResponse } from "@/types/cert";
 import { PlayerListType } from "@/types/lanes";
 
 export const printCertificate = async (id: number) => {
   const response = await apiClient.post("/admin/print_prize", { id: id });
-  return response.data as {
-    cert_data: {
-      cert_data: string;
-      cert_name: string;
-      cert_num: number;
-      president: string;
-      stamp_img: string;
-    },
-    code: number;
-    swimming_data: {
-      dq: string;
-      id: number;
-      lane: number;
-      play_num: number;
-      player: string;
-      rank: number;
-      record: number;
-      srore_id: string;
-      score_rank?: number;
-      score_value?: number;
-      swimming_name: string;
-      team: string;
-    }
-  }
+  return response.data as CertificateResponse
 }
 
 export const getPlayStatus = async () => {

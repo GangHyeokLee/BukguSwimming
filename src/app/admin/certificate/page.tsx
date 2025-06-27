@@ -108,7 +108,7 @@ export default function CertiSelectPage() {
         setSelectedPlay(updated.player_list);
       }
     }
-    else{
+    else {
       alert("수정 실패");
     }
     setEditingRow(null);
@@ -223,14 +223,8 @@ export default function CertiSelectPage() {
                         {!isEditing && player?.rank && player?.rank <= 3 &&
                           <Button
                             onClick={() => {
-                              const params = new URLSearchParams({
-                                player: player?.player || "",
-                                record: formatRecord(player?.record || 0),
-                                rank: player?.rank?.toString() || "",
-                                swimming_name: player?.swimming_name || "",
-                                team: player?.team || ""
-                              });
-                              window.open(`/admin/certificate/print?${params.toString()}`, '_blank');
+                              const params = new URLSearchParams({ id: player?.id.toString() || "" });
+                              window.open(`/bukguswim/admin/certificate/print?${params.toString()}`, '_blank');
                             }}>
                             인쇄
                           </Button>}

@@ -6,7 +6,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   const targetPath = Array.isArray(path) ? path.join('/') : path;
 
   const url = `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/${targetPath}${req.url?.includes('?') ? '?' + req.url.split('?')[1] : ''}`;
-
+  console.log(`Proxying request to: ${url}`);
   try {
     const response = await axios.request({
       url,
@@ -14,6 +14,8 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       headers: req.headers,
       data: ['POST', 'PUT', 'PATCH'].includes(req.method || '') ? req.body : undefined,
     });
+  
+    console.log(`Response status: ${response.status}`);
     res.status(response.status).send(response.data);
   } 
   catch (error: unknown) {
