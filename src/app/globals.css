@@ -56,12 +56,32 @@
     --chart-5: 340 75% 55%
   }
 }
+@import url('https://fonts.googleapis.com/css2?family=Nanum+Myeongjo:wght@400;700;800&display=swap');
+@font-face {
+    font-family: 'ChosunGs';
+    src: url('https://fastly.jsdelivr.net/gh/projectnoonnu/noonfonts_20-04@1.0/ChosunGs.woff') format('woff');
+    font-weight: normal;
+    font-style: normal;
+}
+
+.font-chosungs {
+  font-family: 'ChosunGs', serif;
+  font-weight: normal;
+}
+.font-chosungs-bold {
+  font-family: 'ChosunGs', serif;
+  font-weight: bold;
+}
+
 @layer base {
   * {
     @apply border-border;
   }
   body {
     @apply bg-background text-foreground;
+    /* 기본 폰트는 시스템 폰트로, 궁서체는 유틸리티로만 적용 */
+    font-family: system-ui, sans-serif;
+    font-weight: 400;
   }
 }
 
@@ -87,5 +107,9 @@
   @page {
     size: A4;
     margin: 0;
+  }
+  .font-chosungs-bold {
+    font-family: 'ChosunGs', serif;
+    font-weight: bold !important;
   }
 }
