@@ -223,7 +223,7 @@ export default function CertiSelectPage() {
                         {!isEditing && player?.rank && player?.rank <= 3 &&
                           <Button
                             onClick={() => {
-                              const params = new URLSearchParams({ id: player?.id.toString() || "" });
+                              const params = new URLSearchParams({ id: String(player?.id ?? ""), swimming_id: String(selectedCol ?? "") });
                               window.open(`/bukguswim/admin/certificate/print?${params.toString()}`, '_blank');
                             }}>
                             인쇄

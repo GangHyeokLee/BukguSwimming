@@ -2,8 +2,8 @@ import { apiClient } from '@/api/apiClients';
 import { CertificateResponse } from "@/types/cert";
 import { PlayerListType } from "@/types/lanes";
 
-export const printCertificate = async (id: number) => {
-  const response = await apiClient.post("/admin/print_prize", { id: id });
+export const printCertificate = async (play_data_id: number, swimming_id: number) => {
+  const response = await apiClient.post("/admin/print_prize", { play_data_id: play_data_id, swimming_id: swimming_id });
   return response.data as CertificateResponse
 }
 
