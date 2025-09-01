@@ -18,14 +18,32 @@ export default function RightSideBar() {
       <div className="px-2">
         <div className="flex items-center gap-2 text-gray-800 whitespace-nowrap">
           <Trophy className="w-5 h-5 text-amber-600" />
-          <h2 className="text-lg font-semibold tracking-wide">종목별 경기 결과</h2>
+          <h2 className="text-lg font-semibold tracking-wide">관리자 페이지</h2>
         </div>
         <div className="mt-2 h-px bg-gradient-to-r from-amber-500/70 to-transparent" />
       </div>
 
       <div className="px-2">
+        <Button onClick={() => router.push('/admin/signup')} variant="outline" className="w-full justify-center">
+          회원등록
+        </Button>
+      </div>
+
+      <div className="px-2">
+        <Button onClick={() => router.push('/director')} variant="outline" className="w-full justify-center">
+          감독화면
+        </Button>
+      </div>
+
+      <div className="px-2">
+        <Button onClick={() => router.push('/admin/certificate')} variant="outline" className="w-full justify-center">
+          경기 결과
+        </Button>
+      </div>
+
+      <div className="px-2">
         <Button onClick={() => router.push('/admin/teamScores')} variant="outline" className="w-full justify-center">
-          팀 점수 보기
+          팀별 점수
         </Button>
       </div>
 

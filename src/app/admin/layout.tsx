@@ -8,7 +8,7 @@ export default async function AdminLayout({children}:{children: React.PropsWithC
   const cookieStore = await cookies();
   const token = cookieStore.get("accessToken")?.value;
 
-  if(!token || ![0, 7, 8].includes(parseJwt(token))){
+  if(!token || ![0, 8].includes(parseJwt(token))){
     redirect("/login");
   }
 
