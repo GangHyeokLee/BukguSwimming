@@ -124,13 +124,13 @@ export default function DirectorContent() {
           {data.map((col, index) => {
             const status = getColumnStatusText(index);
             return (
-              <div key={`header-${col.play_num}`} className="border text-sm text-center">
+              <div key={`header-${col.play_num}`} className="border text-sm text-center whitespace-nowrap">
                 <div>{col.play_num}</div>
                 <div className={`text-xs mt-1 ${status.color}`}>{status.label}</div>
               </div>
             );
           })}
-          <div className="text-sm text-center p-1 border">상태</div>
+          <div className="text-sm text-center p-1 border whitespace-nowrap">상태</div>
 
           {[1, 2, 3, 4, 5, 6].map((laneNum) => (
             <div key={`lane-${laneNum}`} className="contents">
@@ -175,18 +175,18 @@ export default function DirectorContent() {
 
       {selectedPlay && (
         <div className="mt-6 border p-4 rounded bg-gray-50">
-          <h2 className="text-lg font-semibold mb-2 text-center">
+          <h2 className="text-lg font-semibold mb-2 text-center whitespace-nowrap">
             {selectedPlay[0].swimming_name}
           </h2>
           <Table>
             <TableHeader>
               <TableRow>
-                <TableHead>레인</TableHead>
-                <TableHead>이름</TableHead>
-                <TableHead>소속</TableHead>
-                <TableHead>순위</TableHead>
-                <TableHead>기록</TableHead>
-                <TableHead>반칙</TableHead>
+                <TableHead className="whitespace-nowrap">레인</TableHead>
+                <TableHead className="whitespace-nowrap">이름</TableHead>
+                <TableHead className="whitespace-nowrap">소속</TableHead>
+                <TableHead className="whitespace-nowrap">순위</TableHead>
+                <TableHead className="whitespace-nowrap">기록</TableHead>
+                <TableHead className="whitespace-nowrap">반칙</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -194,12 +194,12 @@ export default function DirectorContent() {
                 const player = selectedPlay.find((p: PlayerListType) => p.lane === laneNum);
                 return (
                   <TableRow key={`lane-${laneNum}`}>
-                    <TableCell>{laneNum}</TableCell>
-                    <TableCell>{player?.player}</TableCell>
-                    <TableCell>{player?.team}</TableCell>
-                    <TableCell>{player?.rank}</TableCell>
-                    <TableCell>{formatRecord(player?.record || 0)}</TableCell>
-                    <TableCell>{player?.dq}</TableCell>
+                    <TableCell className="whitespace-nowrap">{laneNum}</TableCell>
+                    <TableCell className="whitespace-nowrap">{player?.player}</TableCell>
+                    <TableCell className="whitespace-nowrap">{player?.team}</TableCell>
+                    <TableCell className="whitespace-nowrap">{player?.rank}</TableCell>
+                    <TableCell className="whitespace-nowrap">{formatRecord(player?.record || 0)}</TableCell>
+                    <TableCell className="whitespace-nowrap">{player?.dq}</TableCell>
                   </TableRow>
                 );
               })}
