@@ -6,12 +6,9 @@ export default function CertificatePage() {
   return (
     <div className="p-4 w-full">
       <div className="grid grid-cols-3 items-center">
-        <Link href={"/admin"}>
-          <button className="px-3 py-1 rounded hover:bg-gray-300">
-            ←
-          </button>
-        </Link>
+        <div/>
         <div className="text-xl font-bold text-center mb-4">경기 결과</div>
+        <div/>
       </div>
       <div className="flex gap-4">
         <div className="w-1/5">

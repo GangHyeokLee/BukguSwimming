@@ -24,8 +24,8 @@ export default function RightSideBar() {
       </div>
 
       <div className="px-2">
-        <Button onClick={() => router.push('/admin/signup')} variant="outline" className="w-full justify-center">
-          회원등록
+        <Button onClick={() => router.push('/admin/certificate')} variant="outline" className="w-full justify-center">
+          경기 결과
         </Button>
       </div>
 
@@ -36,14 +36,14 @@ export default function RightSideBar() {
       </div>
 
       <div className="px-2">
-        <Button onClick={() => router.push('/admin/certificate')} variant="outline" className="w-full justify-center">
-          경기 결과
+        <Button onClick={() => router.push('/admin/teamScores')} variant="outline" className="w-full justify-center">
+          팀별 점수
         </Button>
       </div>
 
       <div className="px-2">
-        <Button onClick={() => router.push('/admin/teamScores')} variant="outline" className="w-full justify-center">
-          팀별 점수
+        <Button onClick={() => router.push('/admin/signup')} variant="outline" className="w-full justify-center">
+          회원등록
         </Button>
       </div>
 
