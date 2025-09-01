@@ -41,6 +41,15 @@ export const updatePlayRecord = async (swimming_id: number, id: number, record: 
 }
 
 export const getTeamScore = async () => {
-  const response = await apiClient.get("/admin/team_scores");
-  return response.data as TeamScoresResponse;
+  try {
+    const response = await apiClient.get("/admin/team_scores");
+    const data = response.data as TeamScoresResponse;
+    if (data?.status !== "success") {
+      throw new Error(`Failed to fetch team scores (status: ${data?.status ?? "unknown"})`);
+    }
+    return data;
+  } catch (error) {
+    console.error("getTeamScore error:", error);
+    throw error;
+  }
 }

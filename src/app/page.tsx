@@ -1,6 +1,6 @@
+import { logout } from "@/api/auth";
 import { parseJwt } from "@/utils/parseJwt";
 import { cookies } from "next/headers";
-import Link from "next/link";
 import { redirect } from "next/navigation";
 
 export default async function Home() {
@@ -15,13 +15,10 @@ export default async function Home() {
     redirect("/judge");
   } else if (role === 7) {
     redirect("/director");
+  } else if ([0, 8].includes(role)) {
+    redirect("/admin");
+  } else {
+    logout();
+    redirect("/login");
   }
-
-  return (
-    <div className="flex flex-col h-screen w-full justify-center items-center gap-60 text-5xl text-center">
-      <Link href={"/login"} >로그인</Link>
-      <Link href={"/judge"} >심판</Link>
-      <Link href={"/director"} >감독</Link>
-    </div>
-  );
 }

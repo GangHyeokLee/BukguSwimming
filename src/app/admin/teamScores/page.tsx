@@ -16,7 +16,7 @@ export default function TeamScoresPage() {
       try {
         const response = await getTeamScore();
         setTeamScores(response.data);
-      } catch (e) {
+      } catch {
         setError("팀 점수를 불러오지 못했습니다.");
       } finally {
         setLoading(false);
