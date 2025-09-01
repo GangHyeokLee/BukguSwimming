@@ -30,7 +30,7 @@ export default function RightSideBar() {
       </div>
 
       <div className="px-2">
-        <Button onClick={() => router.push('/director')} variant="outline" className="w-full justify-center">
+        <Button onClick={() => router.push('/admin/director')} variant="outline" className="w-full justify-center">
           감독화면
         </Button>
       </div>
