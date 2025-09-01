@@ -176,7 +176,7 @@ export default function DirectorContent() {
       {selectedPlay && (
         <div className="mt-6 border p-4 rounded bg-gray-50">
           <h2 className="text-lg font-semibold mb-2 text-center whitespace-nowrap">
-            {selectedPlay[0].swimming_name}
+            {selectedCol}번 경기
           </h2>
           <Table>
             <TableHeader>
