@@ -1,13 +1,25 @@
 import CertiSelectPage from "@/components/admin/CertiSelectPage";
+import RightSideBar from "@/components/admin/RightSideBar";
+import Link from "next/link";
 
-export default function CertificatePage(){
+export default function CertificatePage() {
   return (
-    <div className = "p-4 w-full flex gap-3">
-      <div className="w-1/5">
-        // TODO 여기는 그거 사이드 탭? 들어가야댐
+    <div className="p-4 w-full">
+      <div className="grid grid-cols-3 items-center">
+        <Link href={"/admin"}>
+          <button className="px-3 py-1 rounded hover:bg-gray-300">
+            ←
+          </button>
+        </Link>
+        <div className="text-xl font-bold text-center mb-4">경기 결과</div>
       </div>
-      <div className = "w-4/5">
-        <CertiSelectPage/>
+      <div className="flex gap-4">
+        <div className="w-1/5">
+          <RightSideBar/>
+        </div>
+        <div className="w-4/5">
+          <CertiSelectPage />
+        </div>
       </div>
     </div>
   );

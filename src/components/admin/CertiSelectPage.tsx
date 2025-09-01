@@ -3,8 +3,6 @@
 import { useEffect, useState } from "react";
 import { getPlayStatus, reloadPlayStatus, updatePlayRecord } from "@/api/admin/client";
 import { PlayerListType } from "@/types/lanes";
-import { SidePanel } from "@/components/sidepanel/sidepanel";
-import Link from "next/link";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
 
@@ -115,17 +113,7 @@ export default function CertiSelectPage() {
   };
 
   return (
-    <div className="p-4 w-full">
-      <div className="grid grid-cols-3 items-center">
-        <Link href={"/admin"}>
-          <button className="px-3 py-1 rounded hover:bg-gray-300">
-            ←
-          </button>
-        </Link>
-        <div className="text-xl font-bold text-center mb-4">경기 결과</div>
-        <div className="flex justify-end"><SidePanel /></div>
-      </div>
-
+    <div>
       <div className="overflow-x-auto whitespace-nowrap">
         <div
           className="inline-grid"
@@ -134,7 +122,7 @@ export default function CertiSelectPage() {
           {data.map((col, index) => {
             const status = getColumnStatusText(index);
             return (
-              <div key={`header-${col.swimming_id}`} className={`border text-sm text-center ${selectedCol === col.swimming_id ? 'border-t-2 border-r-2 border-l-2 border-double border-red-500' : ''}`}
+              <div key={`header-${col.swimming_id}`} className={`border text-sm text-center ${selectedCol === col.swimming_id ? 'border-t-2 border-r-2 border-l-2 border-double border-red-500' : ''} cursor-pointer`}
                 onClick={() => setSelectedCol(col.swimming_id)}
               >
                 <div>{col.swimming_id}</div>
