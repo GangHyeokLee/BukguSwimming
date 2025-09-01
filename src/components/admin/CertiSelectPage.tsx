@@ -1,12 +1,13 @@
 "use client"
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { getPlayStatus, reloadPlayStatus, updatePlayRecord } from "@/api/admin/client";
 import { PlayerListType } from "@/types/lanes";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
 
 export default function CertiSelectPage() {
+  const scrollerRef = useRef<HTMLDivElement>(null);
   const [selectedCol, setSelectedCol] = useState(-1);
   const [data, setData] = useState<{
     swimming_id: number;
@@ -36,6 +37,31 @@ export default function CertiSelectPage() {
       }
     };
     fetchData();
+  }, []);
+
+  // 세로 휠(deltaY)을 가로 스크롤로 변환
+  useEffect(() => {
+    const el = scrollerRef.current;
+    if (!el) return;
+
+    const onWheel = (e: WheelEvent) => {
+      // 가로 제스처가 더 크면 기본 동작 유지
+      if (Math.abs(e.deltaY) <= Math.abs(e.deltaX)) return;
+
+      const max = el.scrollWidth - el.clientWidth;
+      if (max <= 0) return;
+
+      const next = el.scrollLeft + e.deltaY;
+      const canScrollLeft = e.deltaY < 0 && el.scrollLeft > 0;
+      const canScrollRight = e.deltaY > 0 && el.scrollLeft < max;
+      if (canScrollLeft || canScrollRight) {
+        e.preventDefault();
+        el.scrollLeft = Math.max(0, Math.min(max, next));
+      }
+    };
+
+    el.addEventListener("wheel", onWheel, { passive: false });
+    return () => el.removeEventListener("wheel", onWheel);
   }, []);
 
   useEffect(() => {
@@ -114,7 +140,7 @@ export default function CertiSelectPage() {
 
   return (
     <div>
-      <div className="overflow-x-auto whitespace-nowrap">
+      <div ref={scrollerRef} className="overflow-x-auto whitespace-nowrap">
         <div
           className="inline-grid"
           style={{ gridTemplateColumns: `repeat(${data.length + 1}, minmax(3rem, 1fr))` }}
