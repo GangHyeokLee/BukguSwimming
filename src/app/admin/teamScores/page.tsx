@@ -1,6 +1,5 @@
 "use client"
 
-import Link from "next/link";
 import { useEffect, useState } from "react";
 import { getTeamScore } from "@/api/admin/client";
 import { TeamScoreItem } from "@/types/admin";

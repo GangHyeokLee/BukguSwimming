@@ -1,6 +1,5 @@
 import CertiSelectPage from "@/components/admin/CertiSelectPage";
 import RightSideBar from "@/components/admin/RightSideBar";
-import Link from "next/link";
 
 export default function CertificatePage() {
   return (

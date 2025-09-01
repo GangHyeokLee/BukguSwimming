@@ -1,6 +1,5 @@
 "use client";
 
-import Link from "next/link";
 import RightSideBar from "@/components/admin/RightSideBar";
 import DirectorContent from "@/components/director/DirectorContent";
 
