@@ -41,6 +41,31 @@ export default function DirectorContent() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [data]);
 
+  // 세로 휠(deltaY)을 가로 스크롤로 변환 (데스크톱에서만 동작, 모바일 영향 없음)
+  useEffect(() => {
+    const el = scrollRef.current;
+    if (!el) return;
+
+    const onWheel = (e: WheelEvent) => {
+      // 가로 스크롤 제스처가 아닌 경우에만 전환
+      if (Math.abs(e.deltaY) <= Math.abs(e.deltaX)) return;
+
+      const max = el.scrollWidth - el.clientWidth;
+      if (max <= 0) return;
+
+      const next = el.scrollLeft + e.deltaY;
+      const canScrollLeft = e.deltaY < 0 && el.scrollLeft > 0;
+      const canScrollRight = e.deltaY > 0 && el.scrollLeft < max;
+      if (canScrollLeft || canScrollRight) {
+        e.preventDefault();
+        el.scrollLeft = Math.max(0, Math.min(max, next));
+      }
+    };
+
+    el.addEventListener("wheel", onWheel, { passive: false });
+    return () => el.removeEventListener("wheel", onWheel);
+  }, []);
+
   const fetchData = async () => {
     try {
       const response = await getPlayStatus();
