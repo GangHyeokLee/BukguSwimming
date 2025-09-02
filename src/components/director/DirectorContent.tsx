@@ -1,11 +1,13 @@
 "use client"
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { getPlayStatus } from "@/api/director/client";
 import { PlayerListType } from "@/types/lanes";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 
-export default function DirectorContent() {
+type Props = { searchTerm?: string };
+
+export default function DirectorContent({ searchTerm = "" }: Props) {
   const [selectedCol, setSelectedCol] = useState(-1);
   const [data, setData] = useState<{
     play_num: number;
@@ -79,6 +81,36 @@ export default function DirectorContent() {
     }
   };
 
+  // 검색 필터 (경기번호/이름/팀/종목/DQ). 숫자-only면 경기번호 정확히 일치
+  const normalized = searchTerm.trim().toLowerCase();
+  const isNumericOnly = /^\d+$/.test(normalized);
+  const filtered = useMemo(() => {
+    if (!normalized) return data;
+    return data.filter((d) => {
+      const inHeader = isNumericOnly
+        ? d.play_num === Number(normalized)
+        : String(d.play_num).toLowerCase().includes(normalized);
+      const inPlayers = d.player_list?.some((p) => (
+        (p.player ?? "").toLowerCase().includes(normalized) ||
+        (p.team ?? "").toLowerCase().includes(normalized) ||
+        (p.swimming_name ?? "").toLowerCase().includes(normalized) ||
+        (p.dq ?? "").toLowerCase().includes(normalized)
+      ));
+      return Boolean(inHeader || inPlayers);
+    });
+  }, [data, isNumericOnly, normalized]);
+
+  // 필터 결과 바뀌면 첫 항목 선택 (없으면 해제)
+  useEffect(() => {
+    if (!filtered || filtered.length === 0) {
+      setSelectedCol(-1);
+      return;
+    }
+    if (!filtered.some((d) => d.play_num === selectedCol)) {
+      setSelectedCol(filtered[0].play_num);
+    }
+  }, [filtered, selectedCol]);
+
   const getCellColor = (player: PlayerListType | undefined) => {
     if (!player) return "";
     if (player.dq === "결장") return "bg-red-600";
@@ -131,6 +163,24 @@ export default function DirectorContent() {
     return { label: "", color: "" };
   };
 
+  // 필터와 무관하게 개별 play 기준 상태 계산
+  const getStatusForPlay = (play?: { player_list?: PlayerListType[] }) => {
+    let hasPending = false;
+    let allDone = true;
+    for (const player of play?.player_list ?? []) {
+      if (player && !player.dq && player.record === 0) {
+        hasPending = true;
+        allDone = false;
+      }
+      if (player && !player.dq && player.record !== 0) {
+        allDone = allDone && true;
+      }
+    }
+    if (allDone) return { label: "완료", color: "bg-green-700 text-white" };
+    if (hasPending) return { label: "진행중", color: "bg-orange-400 text-white" };
+    return { label: "", color: "" };
+  };
+
   const findLastCompletedColumnIndex = () => {
     for (let i = data.length - 1; i >= 0; i--) {
       const status = getColumnStatusText(i);
@@ -144,10 +194,10 @@ export default function DirectorContent() {
       <div className="overflow-x-auto whitespace-nowrap" ref={scrollRef}>
         <div
           className="inline-grid"
-          style={{ gridTemplateColumns: `repeat(${data.length + 1}, minmax(3rem, 1fr))` }}
+          style={{ gridTemplateColumns: `repeat(${filtered.length + 1}, minmax(3rem, 1fr))` }}
         >
-          {data.map((col, index) => {
-            const status = getColumnStatusText(index);
+          {filtered.map((col) => {
+            const status = getStatusForPlay(col);
             return (
               <div key={`header-${col.play_num}`} className="border text-sm text-center whitespace-nowrap">
                 <div>{col.play_num}</div>
@@ -157,9 +207,9 @@ export default function DirectorContent() {
           })}
           <div className="text-sm text-center p-1 border whitespace-nowrap">상태</div>
 
-          {[1, 2, 3, 4, 5, 6].map((laneNum) => (
+      {[1, 2, 3, 4, 5, 6].map((laneNum) => (
             <div key={`lane-${laneNum}`} className="contents">
-              {data.map((play) => {
+        {filtered.map((play) => {
                 const player = play.player_list.find((p: PlayerListType) => p.lane === laneNum);
                 return (
                   <button
@@ -173,7 +223,7 @@ export default function DirectorContent() {
             </div>
           ))}
 
-          {data.map((_, index) => (
+          {filtered.map((_, index) => (
             <div key={`status-placeholder-${index}`}></div>
           ))}
           <div></div>
