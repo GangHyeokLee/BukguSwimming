@@ -5,7 +5,7 @@ import { SidePanel } from "@/components/sidepanel/sidepanel";
 import { LaneListType } from "@/types/lanes";
 import { parseJwt } from "@/utils/parseJwt";
 import Link from "next/link";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 
 const ITEMS_PER_PAGE = 4;
 
@@ -14,9 +14,26 @@ function LaneListPage() {
   const [lanes, setLanes] = useState<LaneListType[]>([]);
   const [highlightId, setHighlightId] = useState<number | null>(null);
   const [page, setPage] = useState(1);
+  const [searchTerm, setSearchTerm] = useState("");
+  const normalized = searchTerm.trim().toLowerCase();
+  const isNumericOnly = /^\d+$/.test(normalized);
+  const filteredLanes = useMemo(() => {
+    if (!normalized) return lanes;
+    return lanes.filter((lane) => {
+      const inHeader = isNumericOnly
+        ? lane.play_num === Number(normalized)
+        : String(lane.play_num).toLowerCase().includes(normalized);
+      const inFields =
+        (lane.player ?? "").toLowerCase().includes(normalized) ||
+        (lane.team ?? "").toLowerCase().includes(normalized) ||
+        (lane.swimming_name ?? "").toLowerCase().includes(normalized) ||
+        (lane.dq ?? "").toLowerCase().includes(normalized);
+      return Boolean(inHeader || inFields);
+    });
+  }, [isNumericOnly, lanes, normalized]);
 
-  const totalPages = Math.ceil(lanes.length / ITEMS_PER_PAGE);
-  const currentLanes = lanes.slice((page - 1) * ITEMS_PER_PAGE, page * ITEMS_PER_PAGE);
+  const totalPages = Math.ceil(filteredLanes.length / ITEMS_PER_PAGE);
+  const currentLanes = filteredLanes.slice((page - 1) * ITEMS_PER_PAGE, page * ITEMS_PER_PAGE);
 
   useEffect(() => {
     setLane_num(parseJwt());
@@ -43,6 +60,11 @@ function LaneListPage() {
       })();
     }
   }, [lane_num]);
+
+  // 검색어 변경 시 첫 페이지로 이동
+  useEffect(() => {
+    setPage(1);
+  }, [searchTerm]);
 
 
   const renderPagination = () => {
@@ -97,7 +119,7 @@ function LaneListPage() {
         <div className="text-2xl font-bold flex justify-center whitespace-nowrap">
           {lane_num}번 레인 선수 목록
         </div>
-        <div className="flex justify-end"><SidePanel /></div>
+  <div className="flex justify-end"><SidePanel onSearch={(text) => setSearchTerm(text)} /></div>
       </div>
 
       {renderPagination()}
