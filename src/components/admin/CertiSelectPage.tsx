@@ -1,12 +1,14 @@
 "use client"
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { getPlayStatus, reloadPlayStatus, updatePlayRecord } from "@/api/admin/client";
 import { PlayerListType } from "@/types/lanes";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
 
-export default function CertiSelectPage() {
+type Props = { searchTerm?: string };
+
+export default function CertiSelectPage({ searchTerm = "" }: Props) {
   const scrollerRef = useRef<HTMLDivElement>(null);
   const [selectedCol, setSelectedCol] = useState(-1);
   const [data, setData] = useState<{
@@ -76,12 +78,10 @@ export default function CertiSelectPage() {
     return `${minutes}:${String(seconds).padStart(2, '0')}.${String(milliseconds).padStart(3, '0')}`;
   };
 
-  const getColumnStatusText = (colIndex: number) => {
+  // 필터링 시 인덱스가 바뀌므로, 개별 play 기준으로 상태 계산하는 보조 함수
+  const getStatusForPlay = (play?: { player_list?: PlayerListType[] }) => {
     let hasPending = false;
     let allDone = true;
-
-    // player_list 전체 순회
-    const play = data[colIndex];
     for (const player of play?.player_list ?? []) {
       if (player && !player.dq && player.record === 0) {
         hasPending = true;
@@ -91,10 +91,8 @@ export default function CertiSelectPage() {
         allDone = allDone && true;
       }
     }
-
     if (allDone) return { label: "완료", color: "bg-green-700 text-white" };
     if (hasPending) return { label: "진행중", color: "bg-orange-400 text-white" };
-
     return { label: "", color: "" };
   };
 
@@ -138,15 +136,47 @@ export default function CertiSelectPage() {
     setEditingRow(null);
   };
 
+  // 필터링: 검색어가 있으면 번호/이름/팀/종목/DQ 기준으로 필터
+  const normalized = searchTerm.trim().toLowerCase();
+  const isNumericOnly = /^\d+$/.test(normalized);
+  const filtered = useMemo(() => {
+    if (!normalized) return data;
+    return data.filter((d) => {
+      const inHeader = isNumericOnly
+        ? d.swimming_id === Number(normalized)
+        : String(d.swimming_id).toLowerCase().includes(normalized);
+      const inPlayers = d.player_list?.some((p) => {
+        return (
+          (p.player ?? "").toLowerCase().includes(normalized) ||
+          (p.team ?? "").toLowerCase().includes(normalized) ||
+          (p.swimming_name ?? "").toLowerCase().includes(normalized) ||
+          (p.dq ?? "").toLowerCase().includes(normalized)
+        );
+      });
+      return Boolean(inHeader || inPlayers);
+    });
+  }, [data, isNumericOnly, normalized]);
+
+  // 검색 결과가 바뀌면 첫 항목을 자동 선택
+  useEffect(() => {
+    if (!filtered || filtered.length === 0) {
+      setSelectedCol(-1);
+      return;
+    }
+    if (!filtered.some((d) => d.swimming_id === selectedCol)) {
+      setSelectedCol(filtered[0].swimming_id);
+    }
+  }, [filtered, selectedCol]);
+
   return (
     <div>
       <div ref={scrollerRef} className="overflow-x-auto whitespace-nowrap">
         <div
           className="inline-grid"
-          style={{ gridTemplateColumns: `repeat(${data.length + 1}, minmax(3rem, 1fr))` }}
+          style={{ gridTemplateColumns: `repeat(${filtered.length + 1}, minmax(3rem, 1fr))` }}
         >
-          {data.map((col, index) => {
-            const status = getColumnStatusText(index);
+          {filtered.map((col) => {
+            const status = getStatusForPlay(col);
             return (
               <div key={`header-${col.swimming_id}`} className={`border text-sm text-center ${selectedCol === col.swimming_id ? 'border-t-2 border-r-2 border-l-2 border-double border-red-500' : ''} cursor-pointer`}
                 onClick={() => setSelectedCol(col.swimming_id)}
@@ -161,7 +191,7 @@ export default function CertiSelectPage() {
 
       {/* 경기 정보 표시 */}
       {
-        selectedPlay && (
+  selectedPlay && (
           <div className="mt-6 border p-4 rounded bg-gray-50">
             <h2 className="text-lg font-semibold mb-2 text-center">
               {selectedPlay[0].swimming_name}
