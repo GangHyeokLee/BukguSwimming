@@ -2,8 +2,11 @@
 
 import { useEffect, useMemo, useRef, useState } from "react";
 import { getPlayStatus } from "@/api/director/client";
+import { reloadPlayStatus, updatePlayRecord } from "@/api/admin/client";
 import { PlayerListType } from "@/types/lanes";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { Button } from "@/components/ui/button";
+import { parseJwt } from "@/utils/parseJwt";
 
 type Props = { searchTerm?: string };
 
@@ -14,6 +17,12 @@ export default function DirectorContent({ searchTerm = "" }: Props) {
     player_list: PlayerListType[];
   }[]>([]);
   const [selectedPlay, setSelectedPlay] = useState<PlayerListType[]>();
+  const [isAdmin, setIsAdmin] = useState(false);
+  const [editingRow, setEditingRow] = useState<number | null>(null);
+  const [editDQ, setEditDQ] = useState("");
+  const [editMin, setEditMin] = useState(0);
+  const [editSec, setEditSec] = useState(0);
+  const [editMs, setEditMs] = useState(0);
 
   const scrollRef = useRef<HTMLDivElement>(null);
   const hasScrolledRef = useRef(false);
@@ -25,9 +34,28 @@ export default function DirectorContent({ searchTerm = "" }: Props) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
+  // 권한 파악: 1~6 레인, 7 감독이 아니면 어드민으로 간주
+  useEffect(() => {
+    const role = parseJwt();
+    if (typeof role === "number" && ![1, 2, 3, 4, 5, 6, 7].includes(role)) {
+      setIsAdmin(true);
+    } else {
+      setIsAdmin(false);
+    }
+  }, []);
+
   useEffect(() => {
     setSelectedPlay(data.find((play) => play.play_num === selectedCol)?.player_list);
   }, [selectedCol, data]);
+
+  // 다른 경기가 선택되면 편집 상태 초기화
+  useEffect(() => {
+    setEditingRow(null);
+    setEditDQ("");
+    setEditMin(0);
+    setEditSec(0);
+    setEditMs(0);
+  }, [selectedPlay]);
 
   useEffect(() => {
     if (data.length === 0 || !scrollRef.current || hasScrolledRef.current) return;
@@ -79,6 +107,47 @@ export default function DirectorContent({ searchTerm = "" }: Props) {
     } catch (error) {
       console.error("API 요청 실패:", error);
     }
+  };
+
+  const handleEditClick = (player: PlayerListType) => {
+    setEditingRow(player.id);
+    const ms = player.record || 0;
+    setEditMin(Math.floor(ms / 60000));
+    setEditSec(Math.floor((ms % 60000) / 1000));
+    setEditMs(ms % 1000);
+    setEditDQ(player.dq || "");
+  };
+
+  const handleEditCancel = () => {
+    setEditingRow(null);
+    setEditDQ("");
+    setEditMin(0);
+    setEditSec(0);
+    setEditMs(0);
+  };
+
+  const handleEditSave = async (swimming_id: number, id: number) => {
+    const totalMs = editMin * 60000 + editSec * 1000 + editMs;
+    const ok = await updatePlayRecord(swimming_id, id, totalMs, editDQ);
+    if (ok === true) {
+      const response = await reloadPlayStatus(swimming_id);
+      const updated = response.data?.[0];
+      if (updated) {
+        // data에서 해당 수영 경기(swimming_id)를 포함하는 play를 찾아 player_list만 교체
+        setData(prev => prev.map(d =>
+          d.player_list.some(p => p.swimming_id === swimming_id)
+            ? { ...d, player_list: updated.player_list }
+            : d
+        ));
+        setSelectedPlay(updated.player_list);
+      } else {
+        // 안전망: 전체 재조회
+        fetchData();
+      }
+    } else {
+      alert("수정 실패");
+    }
+    setEditingRow(null);
   };
 
   // 검색 필터 (경기번호/이름/팀/종목/DQ). 숫자-only면 경기번호 정확히 일치
@@ -262,6 +331,7 @@ export default function DirectorContent({ searchTerm = "" }: Props) {
                 <TableHead className="whitespace-nowrap">순위</TableHead>
                 <TableHead className="whitespace-nowrap">기록</TableHead>
                 <TableHead className="whitespace-nowrap">반칙</TableHead>
+                {isAdmin && <TableHead className="whitespace-nowrap">수정</TableHead>}
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -273,8 +343,62 @@ export default function DirectorContent({ searchTerm = "" }: Props) {
                     <TableCell className="whitespace-nowrap">{player?.player}</TableCell>
                     <TableCell className="whitespace-nowrap">{player?.team}</TableCell>
                     <TableCell className="whitespace-nowrap">{player?.rank}</TableCell>
-                    <TableCell className="whitespace-nowrap">{formatRecord(player?.record || 0)}</TableCell>
-                    <TableCell className="whitespace-nowrap">{player?.dq}</TableCell>
+                    <TableCell className="whitespace-nowrap">
+                      {isAdmin && editingRow === player?.id ? (
+                        <div className="flex gap-1 items-center">
+                          <input
+                            type="number"
+                            min={0}
+                            value={editMin}
+                            onChange={(e) => setEditMin(Math.max(0, parseInt(e.target.value) || 0))}
+                            className="border px-1 w-16 text-right"
+                          />
+                          :
+                          <input
+                            type="number"
+                            min={0}
+                            max={59}
+                            value={editSec}
+                            onChange={(e) => setEditSec(Math.min(59, Math.max(0, parseInt(e.target.value) || 0)))}
+                            className="border px-1 w-12 text-right"
+                          />
+                          .
+                          <input
+                            type="number"
+                            min={0}
+                            max={999}
+                            value={editMs}
+                            onChange={(e) => setEditMs(Math.min(999, Math.max(0, parseInt(e.target.value) || 0)))}
+                            className="border px-1 w-16 text-right"
+                          />
+                        </div>
+                      ) : (
+                        formatRecord(player?.record || 0)
+                      )}
+                    </TableCell>
+                    <TableCell className="whitespace-nowrap">
+                      {isAdmin && editingRow === player?.id ? (
+                        <textarea
+                          value={editDQ}
+                          onChange={(e) => setEditDQ(e.target.value)}
+                          className="border px-1 w-40 resize-none"
+                        />
+                      ) : (
+                        player?.dq
+                      )}
+                    </TableCell>
+                    {isAdmin && (
+                      <TableCell className="whitespace-nowrap">
+                        {editingRow === player?.id ? (
+                          <>
+                            <Button size="sm" className="mr-1" onClick={() => player && handleEditSave(player.swimming_id, player.id)}>완료</Button>
+                            <Button size="sm" variant="secondary" onClick={handleEditCancel}>취소</Button>
+                          </>
+                        ) : (
+                          <Button size="sm" variant="outline" onClick={() => player && handleEditClick(player)}>수정</Button>
+                        )}
+                      </TableCell>
+                    )}
                   </TableRow>
                 );
               })}
