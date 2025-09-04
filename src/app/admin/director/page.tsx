@@ -1,14 +1,36 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import RightSideBar from "@/components/admin/RightSideBar";
-import DirectorContent from "@/components/director/DirectorContent";
+import DirectorBoard from "@/components/director/DirectorBoard";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
+import { getPlayStatus } from "@/api/director/client";
+import { PlayerListType } from "@/types/lanes";
+
+type DirectorPlay = {
+  play_num: number;
+  player_list: PlayerListType[];
+};
 
 export default function AdminDirectorPage() {
   const [keywordInput, setKeywordInput] = useState("");
   const [searchTerm, setSearchTerm] = useState("");
+  const [data, setData] = useState<DirectorPlay[]>([]);
+
+  const load = async () => {
+    try {
+      const res = await getPlayStatus();
+      if (res.code === 200) setData(res.data);
+    } catch (e) {
+      console.error(e);
+    }
+  };
+
+  useEffect(() => {
+    // 최초 1회 로드만 수행 (폴링 없음)
+    load();
+  }, []);
   return (
     <div className="p-4 w-full">
       <div className="grid grid-cols-3 items-center">
@@ -27,6 +49,7 @@ export default function AdminDirectorPage() {
             className="h-9 w-56"
           />
           <Button className="h-9" onClick={() => setSearchTerm(keywordInput)}>검색</Button>
+          <Button className="h-9" variant="outline" onClick={load}>새로고침</Button>
         </div>
       </div>
 
@@ -35,7 +58,7 @@ export default function AdminDirectorPage() {
           <RightSideBar />
         </div>
         <div className="w-4/5">
-          <DirectorContent searchTerm={searchTerm} />
+          <DirectorBoard data={data} searchTerm={searchTerm} onRefresh={load} />
         </div>
       </div>
     </div>

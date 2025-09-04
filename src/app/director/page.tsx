@@ -1,6 +1,6 @@
 "use client";
 
-import DirectorContent from "@/components/director/DirectorContent";
+import DirectorPolling from "@/components/director/DirectorPolling";
 import { SidePanel } from "@/components/sidepanel/sidepanel";
 import { useState } from "react";
 
@@ -17,7 +17,7 @@ export default function LaneStatusPage() {
         </div>
       </div>
 
-      <DirectorContent searchTerm={searchTerm} />
+  <DirectorPolling searchTerm={searchTerm} />
     </div>
   );
 }
