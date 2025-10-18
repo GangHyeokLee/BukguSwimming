@@ -2,6 +2,7 @@
 
 import { printCertificate } from "@/api/admin/client";
 import dojang from "@/assets/도장.png";
+import logo from "@/assets/logo.png";
 import { CertificateResponse } from "@/types/cert";
 import Image from "next/image";
 import { useSearchParams } from 'next/navigation'
@@ -50,8 +51,24 @@ export default function PrintCertificate() {
   return (
     <div
       id="certificate-print"
-      className="w-[595px] h-[842px] bg-white px-[100px] py-[120px] text-center flex flex-col justify-between font-chosungs text-black mx-auto print:w-[595px] print:h-[842px]"
+      className="relative overflow-hidden w-[595px] h-[842px] bg-white px-[100px] py-[120px] text-center flex flex-col justify-between font-chosungs text-black mx-auto print:w-[595px] print:h-[842px]"
     >
+      {/* 중앙 워터마크 (배경 로고) */}
+      <div
+        aria-hidden="true"
+        className="pointer-events-none absolute inset-0 flex items-center justify-center z-0"
+      >
+        <Image
+          src={logo}
+          alt="워터마크 로고"
+          className="opacity-10 print:opacity-20 select-none"
+          style={{ width: '480px', height: 'auto', WebkitPrintColorAdjust: 'exact', printColorAdjust: 'exact' }}
+          priority
+        />
+      </div>
+
+      {/* 실제 내용 */}
+      <div className="relative z-10">
       <div className="text-left text-xl mb-2">제{data?.cert_data?.cert_num}호</div>
       <h1 className="text-8xl font-bold tracking-wider mb-6">상&nbsp;&nbsp;&nbsp;장</h1>
       <div className="flex flex-row mb-4 w-full text-2xl whitespace-nowrap">
@@ -101,6 +118,7 @@ export default function PrintCertificate() {
             </span>
           </p>
         </div>
+      </div>
       </div>
     </div>
   );
