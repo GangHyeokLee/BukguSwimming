@@ -90,7 +90,7 @@ export default function PrintCertificate() {
         <br />
         <p className="relative text-3xl font-bold z-10">대구광역시북구수영연맹</p>
         <div className="mt-2 relative inline-block">
-          <Image src={dojang} alt="도장" className="absolute right-[-80px] top-[-35px] z-0"
+          <Image src={dojang} alt="도장" className="absolute right-[-90px] top-[-35px] z-0"
             style={{ width: '103px', height: 'auto', opacity: 0.7 }} />
           <p className="inline-block font-bold text-3xl relative z-10">
             회장&nbsp;&nbsp;&nbsp;&nbsp;
