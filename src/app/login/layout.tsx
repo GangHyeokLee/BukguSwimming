@@ -1,8 +1,9 @@
 import { parseJwt } from "@/utils/parseJwt";
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
+import React from "react";
 
-export default async function LoginLayout ({children}:{children: React.PropsWithChildren}) {
+export default async function LoginLayout ({children}:{children: React.ReactNode}) {
   const cookieStore = await cookies();
    const role = parseJwt(cookieStore.get("accessToken")?.value);
    

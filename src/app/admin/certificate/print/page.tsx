@@ -19,7 +19,7 @@ export default function PrintCertificate() {
     // window.onafterprint = () => { window.close(); };
 
     let timeoutId: NodeJS.Timeout;
-    let forceCloseTimeoutId: NodeJS.Timeout;
+    // let forceCloseTimeoutId: NodeJS.Timeout;
 
     (async () => {
       if (id && swimming_id) {
@@ -44,7 +44,7 @@ export default function PrintCertificate() {
       // clearTimeout(forceCloseTimeoutId);
       // window.onafterprint = null;
     };
-  }, []);
+  }, [id, swimming_id]);
 
   if (!data) return null;
 

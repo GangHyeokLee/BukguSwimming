@@ -91,9 +91,9 @@ export default function CertiSelectPage({ searchTerm = "" }: Props) {
         allDone = allDone && true;
       }
     }
-    if (allDone) return { label: "완료", color: "bg-green-700 text-white" };
-    if (hasPending) return { label: "진행중", color: "bg-orange-400 text-white" };
-    return { label: "", color: "" };
+    if (allDone) return { label: "완료", color: "bg-green-700 text-white", done: true };
+    if (hasPending) return { label: "진행중", color: "bg-orange-400 text-white", done: false };
+    return { label: "", color: "", done: false };
   };
 
   const handleEditClick = (player: PlayerListType) => {
@@ -211,6 +211,7 @@ export default function CertiSelectPage({ searchTerm = "" }: Props) {
               </TableHeader>
               <TableBody>
                 {selectedPlay.map((player, idx) => {
+                  const isAllDone = getStatusForPlay({ player_list: selectedPlay }).done;
                   const isEditing = editingRow === player.id;
                   return (
                     <TableRow key={player.id} >
@@ -263,8 +264,8 @@ export default function CertiSelectPage({ searchTerm = "" }: Props) {
                         )}
                       </TableCell>
                       <TableCell>
-                        {/* 인쇄 버튼: 수정 중인 row에서는 숨김 */}
-                        {!isEditing && player?.rank && player?.rank <= 3 &&
+                        {/* 인쇄 버튼: 수정 중이 아니고, 경기 완료이며, 입상자(1~3위)만 노출 */}
+                        {!isEditing && isAllDone && player?.rank && player?.rank <= 3 &&
                           <Button
                             onClick={() => {
                               const params = new URLSearchParams({ id: String(player?.id ?? ""), swimming_id: String(selectedCol ?? "") });

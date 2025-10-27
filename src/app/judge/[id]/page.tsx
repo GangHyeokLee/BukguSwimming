@@ -4,12 +4,8 @@ import { SidePanel } from "@/components/sidepanel/sidepanel";
 import { LaneDetailType } from "@/types/lanes";
 import Link from "next/link";
 
-interface PageProps{
-    params: {id: string};
-}
-
-export default async function LanePage({ params }: PageProps) {
-    const { id } = params;
+export default async function LanePage({ params }: { params: Promise<{ id: string }> }) {
+    const { id } = await params;
     const response: LaneDetailType = await getLaneDetail(id);
 
     return (response ? (
