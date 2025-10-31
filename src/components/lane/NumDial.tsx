@@ -116,8 +116,13 @@ function NumDial({ maxNum, dialNum, setDialNum }: NumDialProps) {
             "0"
         );
 
+    const normalize = useCallback((n: number) => {
+        const mod = n % maxNum;
+        return (mod + maxNum) % maxNum;
+    }, [maxNum]);
+
     const handleTouchChange = (newNum: number) => {
-        setDialNum(newNum);
+        setDialNum(normalize(newNum));
     }
 
     return (
@@ -138,7 +143,14 @@ function NumDial({ maxNum, dialNum, setDialNum }: NumDialProps) {
                 style={{ width: `${maxNum.toString().length}ch` }}
                 value={formatTime(dialNum)}
                 type="number"
-                onChange={(e) => setDialNum(Number(e.target.value) % maxNum)}
+                min={0}
+                max={Math.max(0, maxNum - 1)}
+                step={1}
+                onChange={(e) => {
+                    const raw = e.target.value;
+                    const n = parseInt(raw === "" ? "0" : raw, 10);
+                    setDialNum(normalize(Number.isNaN(n) ? 0 : n));
+                }}
             />
             <div className="text-2xl font-bold text-gray-300"
                 onClick={() => handleTouchChange((dialNum + 1) % maxNum)}

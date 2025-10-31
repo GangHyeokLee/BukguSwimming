@@ -48,6 +48,10 @@ export default function PrintCertificate() {
 
   if (!data) return null;
 
+  // 이름 길이에 따라 '성명' 위치를 조정 (7자 초과 시 기록 아래로 이동)
+  const playerName = data?.swimming_data?.player ?? '';
+  const isLongName = (playerName?.replace(/\s/g, '')?.length ?? 0) > 7;
+
   return (
     <div
       id="certificate-print"
@@ -86,16 +90,39 @@ export default function PrintCertificate() {
           </p>
         </div>
         <div className="flex flex-col items-start w-2/5 gap-3">
-          <p>순위 : {data?.swimming_data?.rank}위</p>
-          <p>소속 : {data?.swimming_data?.team}</p>
-          <p>성명 : {data?.swimming_data?.player}</p>
+          {/* 라벨 고정폭 + 내용 래핑: 라벨 정렬과 행 들여쓰기 정렬 유지 */}
+          <div className="flex items-start w-full">
+            <span className="w-24 shrink-0">순위 :</span>
+            <span className="flex-1 text-left">{data?.swimming_data?.rank}위</span>
+          </div>
+          <div className="flex items-start w-full">
+            <span className="w-24 shrink-0">소속 :</span>
+            <span className="flex-1 text-left whitespace-normal break-keep">{data?.swimming_data?.team}</span>
+          </div>
+          {!isLongName && (
+            <div className="flex items-start w-full">
+              <span className="w-24 shrink-0">성명 :</span>
+              <span className="flex-1 text-left whitespace-normal break-keep leading-relaxed">{playerName}</span>
+            </div>
+          )}
         </div>
       </div>
+      {isLongName && (
+        <div className="mt-2 w-full text-2xl">
+          {/* 라벨 고정폭(6rem) + 값 가변폭: 줄바꿈 들여쓰기 정렬, 폭은 전체 사용 */}
+          <div className="grid grid-cols-[4rem_1fr] items-start gap-1">
+            <div className="text-left">성명 :</div>
+            <div className="text-left whitespace-nowrap break-keep">{playerName}</div>
+          </div>
+        </div>
+      )}
       <div className="text-3xl text-left whitespace-pre-wrap mt-4 leading-loose">
-        &nbsp;위 사람은 대구광역시 북구체육회에서 주최하는&nbsp;
-        <strong>{data?.cert_data?.cert_name}</strong>에서 위와 같이 우수한 성적으로
-        입상하였기에 이 상장을 수여합니다.
-      </div>
+  &nbsp;위 사람은 대구광역시 북구체육회에서 주최하는{"\n"}
+  <strong>{data?.cert_data?.cert_name}</strong>에서 위와 같이 우수한 성적으로
+  입상하였기에 이 상장을 수여합니다.
+</div>
+
+
       <div className="text-3xl leading-8 mt-8">
         <p className="mb-2 text-3xl">{
           (() => {
