@@ -74,7 +74,7 @@ export default function PrintCertificate() {
       {/* 실제 내용 */}
       <div className="relative z-10">
       <div className="text-left text-xl mb-2">제{data?.cert_data?.cert_num}호</div>
-      <h1 className="text-8xl font-bold tracking-wider mb-6">상&nbsp;&nbsp;&nbsp;장</h1>
+      <h1 className={`text-8xl font-bold tracking-wider ${isLongName ? 'mb-16' : 'mb-20'}`}>상&nbsp;&nbsp;&nbsp;장</h1>
       <div className="flex flex-row mb-4 w-full text-2xl whitespace-nowrap">
         <div className="flex flex-col items-start w-3/5 gap-3">
           <p>종목 : {data?.swimming_data?.swim_type}</p>
