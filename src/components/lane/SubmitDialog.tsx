@@ -21,6 +21,8 @@ export const SubmitDialog = ({ time, foul, id }: SubmitDialogProps) => {
       : time;
 
     await submitResult(id, resultTime, foul);
+    alert("전송되었습니다.");
+    window.location.reload();
   };
 
   return (
