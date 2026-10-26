@@ -1,36 +1,21 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# BukguSwimming
 
-## Getting Started
+Next.js 16, React 19, TypeScript 기반 수영대회 운영 프론트엔드다. Flask API는 별도 운영한다.
 
-First, run the development server:
+Node.js 24.22.1을 사용한다. 개발 서버는 기존과 같이 5000 포트로 실행한다.
 
-```bash
+```powershell
+Copy-Item .env.example .env.local
+# .env.local에 실제 Flask origin을 지정한다.
+npm ci
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+`http://localhost:5000`에서 확인한다.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+Docker 기본 이미지는 standalone 프로덕션 서버다. Docker 개발 서버는 `--target development`로 선택한다.
+`NEXT_PUBLIC_BACKEND_URL`과 API rewrite는 빌드 시 고정되므로 백엔드 주소 변경 시 다시 빌드해야 한다.
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+개발/Docker/프로덕션 실행 명령, 환경 변수 규칙, 보안 변경 근거, 실제 검증 결과와 2027년 대회 준비 사항은 [배포 가이드](docs/deployment.md)를 참고한다.
 
-## Learn More
-
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+현재 전체 빌드는 저장소에서 누락된 `src/assets/도장.png` 때문에 실패한다. 새 lint 설정의 기존 화면 코드 진단도 정리가 필요하다. 원본 자산 복원과 Docker·실제 Flask 회귀 검증을 완료하기 전에는 운영 준비 완료 상태가 아니다.
