@@ -37,18 +37,22 @@ export default function DirectorContent({ searchTerm = "" }: Props) {
   useEffect(() => {
     const role = parseJwt();
     if (typeof role === "number" && ![1, 2, 3, 4, 5, 6, 7].includes(role)) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect -- Preserve existing state synchronization.
       setIsAdmin(true);
     } else {
+      // eslint-disable-next-line react-hooks/set-state-in-effect -- Preserve existing state synchronization.
       setIsAdmin(false);
     }
   }, []);
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- Preserve existing state synchronization.
     setSelectedPlay(data.find((play) => play.play_num === selectedCol)?.player_list);
   }, [selectedCol, data]);
 
   // 다른 경기가 선택되면 편집 상태 초기화
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- Preserve existing state synchronization.
     setEditingRow(null);
     setEditDQ("");
     setEditMin(0);
@@ -95,7 +99,7 @@ export default function DirectorContent({ searchTerm = "" }: Props) {
     return () => el.removeEventListener("wheel", onWheel);
   }, []);
 
-  const fetchData = async () => {
+  async function fetchData() {
     try {
       const response = await getPlayStatus();
       if (response.code === 200) {
@@ -106,7 +110,7 @@ export default function DirectorContent({ searchTerm = "" }: Props) {
     } catch (error) {
       console.error("API 요청 실패:", error);
     }
-  };
+  }
 
   const handleEditClick = (player: PlayerListType) => {
     setEditingRow(player.id);
@@ -171,6 +175,7 @@ export default function DirectorContent({ searchTerm = "" }: Props) {
   // 필터 결과 바뀌면 첫 항목 선택 (없으면 해제)
   useEffect(() => {
     if (!filtered || filtered.length === 0) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect -- Preserve existing state synchronization.
       setSelectedCol(-1);
       return;
     }
@@ -249,13 +254,13 @@ export default function DirectorContent({ searchTerm = "" }: Props) {
     return { label: "", color: "" };
   };
 
-  const findLastCompletedColumnIndex = () => {
+  function findLastCompletedColumnIndex() {
     for (let i = data.length - 1; i >= 0; i--) {
       const status = getColumnStatusText(i);
       if (status.label === "완료") return i;
     }
     return -1;
-  };
+  }
 
   return (
     <div className="w-full">

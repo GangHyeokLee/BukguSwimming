@@ -16,8 +16,10 @@ function FoulPanel({ foul, setFoul }: FoulPanelProps) {
   // ✅ 단방향 동기화: 부모의 foul이 바뀌면 입력창에만 반영
   useEffect(() => {
     if (!foul || isPreset(foul)) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect -- Preserve existing state synchronization.
       if (customFoul !== "") setCustomFoul(""); // 프리셋/빈값이면 입력창 비움
     } else {
+      // eslint-disable-next-line react-hooks/set-state-in-effect -- Preserve existing state synchronization.
       if (customFoul !== foul) setCustomFoul(foul); // 커스텀이면 미러링
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps

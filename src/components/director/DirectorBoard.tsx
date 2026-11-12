@@ -29,17 +29,20 @@ export default function DirectorBoard({ data, searchTerm = "", onRefresh }: Prop
   const hasScrolledRef = useRef(false);
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- Preserve existing state synchronization.
     setSelectedPlay(data.find((play) => play.play_num === selectedCol)?.player_list);
   }, [selectedCol, data]);
 
   // 권한: admin은 role 0 또는 8
   useEffect(() => {
     const role = parseJwt();
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- Preserve existing state synchronization.
     setIsAdmin(role === 0 || role === 8);
   }, []);
 
   // 선택 변경 시 편집 초기화
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- Preserve existing state synchronization.
     setEditingRow(null);
     setEditDQ("");
     setEditMin(0);
@@ -105,6 +108,7 @@ export default function DirectorBoard({ data, searchTerm = "", onRefresh }: Prop
   // 필터 결과 바뀌면 첫 항목 선택 (없으면 해제)
   useEffect(() => {
     if (!filtered || filtered.length === 0) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect -- Preserve existing state synchronization.
       setSelectedCol(-1);
       return;
     }
@@ -199,13 +203,13 @@ export default function DirectorBoard({ data, searchTerm = "", onRefresh }: Prop
     return { label: "", color: "" };
   };
 
-  const findLastCompletedColumnIndex = () => {
+  function findLastCompletedColumnIndex() {
     for (let i = data.length - 1; i >= 0; i--) {
       const status = getColumnStatusText(i);
       if (status.label === "완료") return i;
     }
     return -1;
-  };
+  }
 
   return (
     <div className="w-full">
